@@ -1,0 +1,12 @@
+{
+  "productType": "mug",
+  "designStyle": "wraparound product art",
+  "requiresTransparency": false,
+  "targetResolution": "2700x1120",
+  "mockupAspectRatios": [
+    "1:1",
+    "4:5",
+    "16:9"
+  ],
+  "printArea": "front"
+}

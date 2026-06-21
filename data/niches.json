@@ -1,0 +1,14 @@
+[
+  { "name": "Veteran Owned Brand", "category": "Art & Collectibles", "priority": 1, "product_types": ["sticker", "t-shirt", "mug", "poster", "hoodie", "enamel-pin"] },
+  { "name": "Cybersecurity Culture", "category": "Art & Collectibles", "priority": 1, "product_types": ["sticker", "t-shirt", "mug", "poster", "hoodie", "enamel-pin"] },
+  { "name": "Law Enforcement Community", "category": "Art & Collectibles", "priority": 1, "product_types": ["sticker", "t-shirt", "mug", "poster", "hoodie", "enamel-pin"] },
+  { "name": "Quiet Professional", "category": "Art & Collectibles", "priority": 1, "product_types": ["sticker", "t-shirt", "mug", "poster", "hoodie", "enamel-pin"] },
+  { "name": "Tech Veteran Crossover", "category": "Art & Collectibles", "priority": 1, "product_types": ["sticker", "t-shirt", "mug", "poster", "hoodie", "enamel-pin"] },
+  { "name": "Veteran Humor Dark", "category": "Paper & Party Supplies", "priority": 1, "product_types": ["sticker", "t-shirt", "mug", "poster", "hoodie", "enamel-pin"] },
+  { "name": "Responder Culture", "category": "Art & Collectibles", "priority": 1, "product_types": ["sticker", "t-shirt", "mug", "poster", "hoodie", "enamel-pin"] },
+  { "name": "Cold War Intelligence", "category": "Art & Collectibles", "priority": 2, "product_types": ["sticker", "t-shirt", "mug", "poster", "hoodie", "enamel-pin"] },
+  { "name": "Hacker Culture", "category": "Art & Collectibles", "priority": 2, "product_types": ["sticker", "t-shirt", "mug", "poster", "hoodie", "enamel-pin"] },
+  { "name": "SOC Analyst Culture", "category": "Art & Collectibles", "priority": 2, "product_types": ["sticker", "t-shirt", "mug", "poster", "hoodie", "enamel-pin"] },
+  { "name": "Minimal Dark Aesthetic", "category": "Art & Collectibles", "priority": 2, "product_types": ["sticker", "t-shirt", "mug", "poster", "hoodie", "enamel-pin"] },
+  { "name": "Service to Tech Pipeline", "category": "Art & Collectibles", "priority": 2, "product_types": ["sticker", "t-shirt", "mug", "poster", "hoodie", "enamel-pin"] }
+]

@@ -1,0 +1,16 @@
+{
+  "productType": "enamel-pin",
+  "designStyle": "clean die-cut enamel badge illustration",
+  "requiresTransparency": true,
+  "targetResolution": "3000x3000",
+  "mockupAspectRatios": [
+    "1:1",
+    "4:5",
+    "16:9"
+  ],
+  "printArea": "centered pin face",
+  "promptDirectives": [
+    "Use a single closed outer silhouette suitable for manufacturing.",
+    "Use bold metal-like outlines, flat color regions, and no tiny floating details."
+  ]
+}

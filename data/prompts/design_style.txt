@@ -1,0 +1,35 @@
+Feint Supply Co. design language:
+
+Brand: Feint Supply Co.
+Tagline: Built different. By people who were.
+
+Tone and visual direction:
+- Veteran and former law enforcement owned perspective expressed through quiet authority, not theatrics.
+- Modern tech aesthetic with cybersecurity culture, dark minimal precision design, and service-to-civilian-tech crossover.
+- Clean geometry, terminal and code references, signal/comms motifs, redacted-document energy, and operator-grade restraint.
+
+Colors:
+- Primary near-black: #0D1117
+- Secondary electric cyan: #00D4FF
+- Accent signal amber: #F5A623
+- Background dark navy: #1A1F2E
+- Text off-white: #E8E8E8
+
+Typography:
+- Prefer Space Grotesk, Inter, and JetBrains Mono aesthetics.
+- Never use stencil, blackletter, gothic, faux-tactical, or aggressive military-surplus typography.
+
+What Feint Supply Co. is:
+- Quiet professional
+- Service background, modern execution
+- For those who already know
+- Precision over decoration
+
+What to avoid:
+- Punisher skulls
+- Camouflage
+- Generic flag shirts
+- Surplus-store energy
+- Loud macho slogans
+- Overt chest-beating
+- Weapon imagery

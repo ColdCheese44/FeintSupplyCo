@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+    
+    <defs>
+      <pattern id="grid" patternUnits="userSpaceOnUse" width="40" height="40">
+        <path d="M 0 40 L 40 40" stroke="#1A1F2E" stroke-width="0.5" fill="none" />
+        <path d="M 40 0 L 40 40" stroke="#1A1F2E" stroke-width="0.5" fill="none" />
+      </pattern>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="#0D1117" />
+    <rect width="1024" height="1024" fill="url(#grid)" />
+    <g fill="none" stroke="#F5A623" stroke-width="2.5" stroke-linecap="round">
+      <path d="M 494 400 L 512 409" />
+      <path d="M 494 418 L 512 409" />
+    </g>
+    <line x1="156" y1="434" x2="868" y2="434" stroke="#00D4FF" stroke-width="1.5" />
+    <text x="512" y="514" text-anchor="middle" fill="#E8E8E8" font-family="Space Grotesk, Arial, sans-serif" font-size="68" font-weight="700" letter-spacing="10">FEINT SUPPLY CO.</text>
+    <line x1="156" y1="552" x2="868" y2="552" stroke="#00D4FF" stroke-width="1.5" />
+  </svg>

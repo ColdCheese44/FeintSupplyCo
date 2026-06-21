@@ -1,0 +1,16 @@
+{
+  "productType": "hoodie",
+  "designStyle": "bold premium apparel graphic",
+  "requiresTransparency": true,
+  "targetResolution": "4500x5400",
+  "mockupAspectRatios": [
+    "1:1",
+    "4:5",
+    "16:9"
+  ],
+  "printArea": "front",
+  "promptDirectives": [
+    "Use strong contrast that remains readable on dark fabric.",
+    "Keep critical artwork inside a centered chest-safe area."
+  ]
+}

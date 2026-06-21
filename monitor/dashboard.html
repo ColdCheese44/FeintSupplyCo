@@ -1,0 +1,1794 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quartermaster — Feint Supply Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080c10;
+      --card: #0d1117;
+      --cyan: #10a37f;        /* primary accent remapped to FeintTrade green */
+      --accent2: #00d4aa;
+      --amber: #fbbf24;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --success: #10a37f;
+      --danger: #f85149;
+      --border: rgba(16, 163, 127, 0.18);
+      --warning: #d29922;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(0, 212, 255, 0.04), transparent 18%),
+        var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .shell {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-start;
+      padding: 20px 24px;
+      border: 1px solid var(--border);
+      background: rgba(26, 31, 46, 0.82);
+      border-radius: 18px;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-family: "Consolas", "SFMono-Regular", monospace;
+      letter-spacing: 0.24em;
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .brand-subtitle {
+      margin: 0;
+      color: var(--cyan);
+      font-size: 0.92rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .provider-health {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .provider-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .provider-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .provider-ok { background: var(--success); }
+    .provider-degraded { background: var(--warning); }
+    .provider-down { background: var(--danger); }
+
+    .header-meta {
+      text-align: right;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .status-line {
+      color: var(--text);
+      font-family: "Consolas", "SFMono-Regular", monospace;
+    }
+
+    .warning {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--warning);
+      background: rgba(210, 153, 34, 0.12);
+      color: #f7d98a;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: rgba(26, 31, 46, 0.86);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+    }
+
+    .kpi-label,
+    .panel-title,
+    .panel-subtitle {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .kpi-label {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .kpi-value {
+      margin: 16px 0 10px;
+      font-size: 2rem;
+      line-height: 1;
+      font-weight: 800;
+      font-family: "Consolas", "SFMono-Regular", monospace;
+    }
+
+    .kpi-foot {
+      color: var(--muted);
+      font-size: 0.8rem;
+      min-height: 1.2em;
+    }
+
+    .budget-ok { border-color: var(--border); }
+    .budget-warn { border-color: rgba(245, 166, 35, 0.8); }
+    .budget-danger { border-color: rgba(248, 81, 73, 0.9); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .pending-panel {
+      margin-top: 20px;
+      display: none;
+    }
+
+    .pending-panel.visible {
+      display: block;
+    }
+
+    .pending-title {
+      color: var(--amber);
+    }
+
+    .pending-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .button {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+      transform: none;
+    }
+
+    .button-amber {
+      background: rgba(245, 166, 35, 0.18);
+      border-color: rgba(245, 166, 35, 0.55);
+      color: #ffd487;
+    }
+
+    .button-cyan {
+      background: rgba(0, 212, 255, 0.14);
+      border-color: rgba(0, 212, 255, 0.45);
+      color: var(--cyan);
+    }
+
+    .button-danger {
+      background: rgba(248, 81, 73, 0.16);
+      border-color: rgba(248, 81, 73, 0.45);
+      color: #ffb4ad;
+    }
+
+    .pending-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .pending-card {
+      display: grid;
+      grid-template-columns: 160px minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid rgba(245, 166, 35, 0.22);
+      background: rgba(245, 166, 35, 0.05);
+      border-radius: 14px;
+    }
+
+    .pending-image {
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--card);
+      background: rgba(255, 255, 255, 0.04);
+      cursor: zoom-in;
+    }
+
+    .pending-name {
+      margin: 0 0 6px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .pending-meta,
+    .pending-tags,
+    .pending-state {
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin: 3px 0;
+    }
+
+    .pending-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .pending-error {
+      margin-top: 8px;
+      color: var(--danger);
+      font-size: 0.82rem;
+      line-height: 1.4;
+    }
+
+    .card-fade-out {
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .panel {
+      min-height: 320px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .panel-subtitle {
+      color: var(--muted);
+      font-size: 0.74rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid rgba(139, 148, 158, 0.18);
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .mono {
+      font-family: "Consolas", "SFMono-Regular", monospace;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .status-published {
+      background: rgba(0, 212, 255, 0.16);
+      color: var(--cyan);
+    }
+
+    .status-draft,
+    .status-paused {
+      background: rgba(139, 148, 158, 0.16);
+      color: var(--muted);
+    }
+
+    .status-failed {
+      background: rgba(248, 81, 73, 0.18);
+      color: var(--danger);
+    }
+
+    .status-pending {
+      background: rgba(245, 166, 35, 0.16);
+      color: #ffd487;
+    }
+
+    .status-fulfilled {
+      background: rgba(0, 212, 255, 0.16);
+      color: var(--cyan);
+    }
+
+    .status-shipped {
+      background: rgba(46, 160, 67, 0.18);
+      color: var(--success);
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .dot-active {
+      background: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 212, 255, 0.6);
+    }
+
+    .dot-paused {
+      background: #5d636d;
+    }
+
+    .empty-state {
+      padding: 26px 12px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .cost-row {
+      margin-bottom: 18px;
+    }
+
+    .cost-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 8px;
+      font-size: 0.88rem;
+    }
+
+    .cost-bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+
+    .cost-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--cyan);
+    }
+
+    .cost-fill.over {
+      background: var(--amber);
+    }
+
+    .heartbeat-panel {
+      margin-top: 20px;
+    }
+
+    .audit-panel {
+      margin-top: 20px;
+    }
+
+    .audit-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.72rem;
+    }
+
+    .audit-toggle:hover {
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    .audit-panel-body {
+      display: none;
+    }
+
+    .audit-panel-body.visible {
+      display: block;
+    }
+
+    .heartbeat-clean {
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .heartbeat-error {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .truncate {
+      max-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 1280px) {
+      .kpis {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .header {
+        flex-direction: column;
+      }
+
+      .header-meta {
+        text-align: left;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        padding: 14px;
+      }
+
+      .kpis {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #lightbox-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      cursor: pointer;
+    }
+
+    #lightbox-container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #lightbox-img {
+      max-width: 80vw;
+      max-height: 75vh;
+      border-radius: 8px;
+      border: 1px solid var(--cyan);
+      transform-origin: center;
+      transition: transform 0.2s ease;
+      cursor: zoom-in;
+    }
+
+    #lightbox-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    #lightbox-controls button {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--muted);
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #lightbox-controls button:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* ===== FeintTrade-style terminal chrome ===== */
+    body {
+      background:
+        radial-gradient(1200px 400px at 50% -10%, rgba(16, 163, 127, 0.06), transparent 60%),
+        var(--bg);
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    .mono { font-family: "JetBrains Mono", "Consolas", "SFMono-Regular", monospace; }
+    .shell { max-width: 1600px; padding: 0 24px 32px; }
+
+    .titlebar {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; gap: 18px;
+      margin: 0 -24px 0; padding: 0 24px;
+      height: 52px;
+      background: #0b1014;
+      border-bottom: 1px solid var(--border);
+    }
+    .titlebar .logo {
+      color: var(--cyan); font-weight: 800; font-size: 0.95rem; letter-spacing: 0.14em;
+      white-space: nowrap; font-family: "JetBrains Mono", monospace;
+    }
+    .tab-bar { display: flex; gap: 4px; flex: 1; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 7px 16px; border: none; border-radius: 7px; cursor: pointer;
+      font: inherit; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.02em;
+      background: transparent; color: var(--muted); transition: all 0.15s;
+    }
+    .tab-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .tab-btn.active { background: rgba(16, 163, 127, 0.14); color: var(--cyan); }
+    .titlebar-meta {
+      display: flex; align-items: center; gap: 14px; margin-left: auto;
+      color: var(--muted); font-size: 0.74rem; white-space: nowrap;
+    }
+    .status-dot {
+      width: 9px; height: 9px; border-radius: 50%; background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan); animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    .ticker {
+      margin: 0 -24px 18px; padding: 0; overflow: hidden;
+      background: #0b1014; border-bottom: 1px solid var(--border);
+      height: 34px; display: flex; align-items: center;
+    }
+    .ticker-track {
+      display: inline-block; white-space: nowrap; padding-left: 100%;
+      font-family: "JetBrains Mono", monospace; font-size: 0.8rem; color: var(--muted);
+      animation: ticker 38s linear infinite;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    .ticker-track b { color: var(--text); }
+    .ticker-up { color: var(--success); }
+    .ticker-down { color: var(--danger); }
+    .ticker-sep { color: #334155; margin: 0 14px; }
+    @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+    .brand-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 24px; margin: 18px 0 16px; flex-wrap: wrap;
+    }
+
+    .tab-panel { display: none; animation: fade 0.2s ease; }
+    .tab-panel.active { display: block; }
+    @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    /* Ops tab controls */
+    .ops-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+    .ops-btn {
+      min-width: 180px; padding: 12px 14px; border-radius: 8px; cursor: pointer;
+      font: inherit; font-size: 0.85rem; font-weight: 600; text-align: left;
+      background: var(--card); color: var(--text);
+      border: 1px solid var(--border); transition: all 0.15s;
+    }
+    .ops-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+    .ops-btn.danger { border-color: rgba(248,81,73,0.4); }
+    .ops-btn.danger:hover { color: var(--danger); border-color: var(--danger); }
+    .ops-btn:disabled { opacity: 0.5; cursor: default; }
+    .ops-output {
+      margin-top: 12px; padding: 12px 14px; border-radius: 8px;
+      background: #0b1014; border: 1px solid var(--border);
+      font-family: "JetBrains Mono", monospace; font-size: 0.8rem; color: var(--muted);
+      white-space: pre-wrap; min-height: 20px;
+    }
+
+    .refresh-button {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 9px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      cursor: pointer;
+    }
+    .refresh-button:hover { color: var(--text); border-color: var(--cyan); }
+    .refresh-button:disabled { opacity: 0.55; cursor: wait; }
+    .status-dot.offline { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+    button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--accent2);
+      outline-offset: 3px;
+    }
+    .table-scroll { width: 100%; overflow-x: auto; }
+
+    @media (max-width: 900px) {
+      .shell { padding: 0 16px 24px; }
+      .titlebar {
+        height: auto;
+        min-height: 52px;
+        margin: 0 -16px;
+        padding: 9px 16px;
+        flex-wrap: wrap;
+      }
+      .tab-bar {
+        order: 3;
+        flex-basis: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 3px;
+        scrollbar-width: none;
+      }
+      .tab-bar::-webkit-scrollbar { display: none; }
+      .tab-btn { white-space: nowrap; }
+      .titlebar-meta { gap: 8px; }
+      #refresh-status { display: none; }
+      .ticker { margin: 0 -16px 18px; }
+      .pending-card { grid-template-columns: 112px minmax(0, 1fr); }
+      .pending-image { width: 112px; height: 112px; }
+      .pending-controls { grid-column: 1 / -1; flex-direction: row; }
+    }
+
+    @media (max-width: 560px) {
+      .titlebar .logo { font-size: 0.78rem; }
+      .titlebar-meta { margin-left: 0; }
+      #last-updated { display: none; }
+      .kpis { grid-template-columns: 1fr; }
+      .card { padding: 15px; border-radius: 13px; }
+      .pending-card { grid-template-columns: 1fr; }
+      .pending-image { width: 100%; height: auto; aspect-ratio: 1; }
+      .pending-controls { grid-column: auto; }
+      .ops-btn { min-width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="titlebar">
+      <span class="logo">&#x2B22; QUARTERMASTER</span>
+      <nav class="tab-bar" role="tablist" aria-label="Quartermaster sections">
+        <button class="tab-btn active" data-tab="overview" type="button" role="tab" aria-selected="true" aria-controls="panel-overview">Overview</button>
+        <button class="tab-btn" data-tab="listings" type="button" role="tab" aria-selected="false" aria-controls="panel-listings">Listings</button>
+        <button class="tab-btn" data-tab="costs" type="button" role="tab" aria-selected="false" aria-controls="panel-costs">Costs</button>
+        <button class="tab-btn" data-tab="heartbeat" type="button" role="tab" aria-selected="false" aria-controls="panel-heartbeat">Heartbeat</button>
+        <button class="tab-btn" data-tab="orders" type="button" role="tab" aria-selected="false" aria-controls="panel-orders">Orders</button>
+        <button class="tab-btn" data-tab="igm" type="button" role="tab" aria-selected="false" aria-controls="panel-igm">IGM</button>
+        <button class="tab-btn" data-tab="ops" type="button" role="tab" aria-selected="false" aria-controls="panel-ops">Ops</button>
+      </nav>
+      <div class="titlebar-meta">
+        <span class="status-line" id="last-updated">Last updated: --</span>
+        <span id="refresh-status">Refresh in 30s</span>
+        <button class="refresh-button" id="refresh-button" type="button">Refresh</button>
+        <span class="status-dot" id="connection-dot" title="Connected" aria-label="Connected"></span>
+      </div>
+    </div>
+
+    <div class="ticker"><div class="ticker-track" id="ticker-track">Loading market data&hellip;</div></div>
+
+    <div class="warning" id="warning-banner">Last refresh failed. Showing stale data.</div>
+
+    <!-- ===== OVERVIEW ===== -->
+    <div class="tab-panel active" id="panel-overview" role="tabpanel">
+    <section class="brand-row">
+      <div class="brand">
+        <h1 class="brand-title">FEINT SUPPLY CO.</h1>
+        <p class="brand-subtitle">Quartermaster &mdash; autonomous commerce</p>
+      </div>
+      <div class="provider-health" id="provider-health"></div>
+    </section>
+
+    <section class="kpis">
+      <div class="card">
+        <div class="kpi-label">Published Listings</div>
+        <div class="kpi-value mono" id="kpi-published">0</div>
+        <div class="kpi-foot" id="kpi-published-foot">Total live listings</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Designs Generated</div>
+        <div class="kpi-value mono" id="kpi-designs">0</div>
+        <div class="kpi-foot" id="kpi-designs-foot">All-time generated designs</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Total Revenue</div>
+        <div class="kpi-value mono" id="kpi-revenue">$0.00</div>
+        <div class="kpi-foot" id="kpi-revenue-foot">Gross orders recorded</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Your Earnings</div>
+        <div class="kpi-value mono" id="kpi-earnings">$0.00</div>
+        <div class="kpi-foot" id="kpi-earnings-foot">Operator earnings ledger</div>
+      </div>
+      <div class="card budget-ok" id="budget-card">
+        <div class="kpi-label">Budget Used</div>
+        <div class="kpi-value mono" id="kpi-budget">$0.00</div>
+        <div class="kpi-foot" id="kpi-budget-foot">$0.00 remaining</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Last Heartbeat</div>
+        <div class="kpi-value mono" id="kpi-heartbeat">--</div>
+        <div class="kpi-foot" id="kpi-heartbeat-foot">Last successful timestamp</div>
+      </div>
+      <div class="card" id="failed-ops-card">
+        <div class="kpi-label">Failed Ops</div>
+        <div class="kpi-value mono" id="kpi-failed-ops">0</div>
+        <div class="kpi-foot" id="kpi-failed-ops-foot">Pending dead-letter items</div>
+      </div>
+    </section>
+    </div>
+
+    <!-- ===== LISTINGS ===== -->
+    <div class="tab-panel" id="panel-listings" role="tabpanel">
+    <section class="card pending-panel" id="pending-panel-shell">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title pending-title">Pending Approval</h2>
+          <span class="panel-subtitle" id="pending-subtitle">0 listings awaiting review</span>
+        </div>
+        <div class="pending-actions">
+          <button class="button button-amber" id="approve-all-button" type="button">Approve All</button>
+        </div>
+      </div>
+      <div id="pending-panel"></div>
+    </section>
+
+    <section class="grid">
+      <div class="card panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Niche Performance</h2>
+          <span class="panel-subtitle" id="niches-subtitle">Revenue-ranked active niches</span>
+        </div>
+        <div id="niches-panel"></div>
+      </div>
+
+      <div class="card panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Recent Listings</h2>
+          <span class="panel-subtitle">Last 20 listing records</span>
+        </div>
+        <div id="listings-panel"></div>
+      </div>
+    </section>
+    </div>
+
+    <!-- ===== COSTS ===== -->
+    <div class="tab-panel" id="panel-costs" role="tabpanel">
+    <section class="grid">
+      <div class="card panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Cost Breakdown</h2>
+          <span class="panel-subtitle" id="costs-subtitle">Today $0.00 | 7-day $0.00</span>
+        </div>
+        <div id="costs-panel"></div>
+      </div>
+
+      <div class="card panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Top Analytics</h2>
+          <span class="panel-subtitle">Latest listing performance snapshots</span>
+        </div>
+        <div id="analytics-panel"></div>
+      </div>
+    </section>
+    </div>
+
+    <!-- ===== HEARTBEAT ===== -->
+    <div class="tab-panel" id="panel-heartbeat" role="tabpanel">
+    <section class="card heartbeat-panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Heartbeat Log</h2>
+        <span class="panel-subtitle">Last 10 automation cycles</span>
+      </div>
+      <div id="heartbeat-panel"></div>
+    </section>
+    </div>
+
+    <!-- ===== ORDERS ===== -->
+    <div class="tab-panel" id="panel-orders" role="tabpanel">
+    <section class="card heartbeat-panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Orders</h2>
+        <span class="panel-subtitle">Last 20 fulfillment records</span>
+      </div>
+      <div id="orders-panel"></div>
+    </section>
+    </div>
+
+    <!-- ===== IGM ===== -->
+    <div class="tab-panel" id="panel-igm" role="tabpanel">
+    <section class="card heartbeat-panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Passive Income (IGM)</h2>
+        <span class="panel-subtitle">Bandwidth-sharing apps + reported earnings</span>
+      </div>
+      <div id="igm-panel"></div>
+    </section>
+    </div>
+
+    <!-- ===== OPS ===== -->
+    <div class="tab-panel" id="panel-ops" role="tabpanel">
+    <section class="card panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Operations</h2>
+          <span class="panel-subtitle">Run a component now or control the daemon (runs server-side)</span>
+        </div>
+      </div>
+      <div class="ops-grid">
+        <button class="ops-btn" data-op="heartbeat" type="button">&#9654; Run Heartbeat</button>
+        <button class="ops-btn" data-op="orderwatch" type="button">&#9654; Order Watch</button>
+        <button class="ops-btn" data-op="trend-mine" type="button">&#9654; Trend Miner</button>
+        <button class="ops-btn" data-op="costs" type="button">&#9654; Cost Refresh</button>
+        <button class="ops-btn" data-op="igm-status" type="button">&#9654; IGM Status</button>
+        <button class="ops-btn" data-op="audit" type="button">&#9654; Credential Audit</button>
+        <button class="ops-btn" data-op="daemon-start" type="button">&#9654; Start Daemon</button>
+        <button class="ops-btn danger" data-op="daemon-stop" type="button">&#9632; Stop Daemon</button>
+      </div>
+      <div class="ops-output" id="ops-output">Idle. Actions run server-side; watch your Discord channels and logs for results.</div>
+    </section>
+
+    <section class="card audit-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Activity Log</h2>
+          <span class="panel-subtitle">Last 50 human, Jarvis, and system actions</span>
+        </div>
+        <button class="audit-toggle" id="audit-toggle" type="button">Show Activity</button>
+      </div>
+      <div class="audit-panel-body" id="audit-panel-body">
+        <div id="audit-panel"></div>
+      </div>
+    </section>
+    </div>
+
+  </div>
+
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Design preview" aria-hidden="true">
+    <div id="lightbox-backdrop"></div>
+    <div id="lightbox-container">
+      <img id="lightbox-img" src="" alt="">
+      <div id="lightbox-controls">
+        <button id="zoom-in" type="button">+</button>
+        <button id="zoom-out" type="button">-</button>
+        <button id="zoom-reset" type="button">&#10226;</button>
+        <button id="lightbox-close" type="button">&#10005;</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      lastUpdated: null,
+      nextRefreshInSeconds: 30,
+      lastRefreshFailed: false,
+      failedPanels: [],
+      pendingRows: [],
+      isRefreshing: false,
+    };
+    let zoomLevel = 1;
+    let lightboxReturnFocus = null;
+
+    function formatUsd(value) {
+      const amount = Number(value ?? 0);
+      return `$${amount.toFixed(2)}`;
+    }
+
+    function formatTimestamp(value) {
+      if (!value) return "--";
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+    }
+
+    function truncate(text, limit) {
+      if (!text) return "";
+      return text.length > limit ? `${text.slice(0, limit - 1)}...` : text;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+
+    function setRefreshing(active) {
+      state.isRefreshing = active;
+      const label = document.getElementById("refresh-status");
+      const button = document.getElementById("refresh-button");
+      button.disabled = active;
+      button.textContent = active ? "Refreshing" : "Refresh";
+      if (active) {
+        label.textContent = "Refreshing...";
+        return;
+      }
+      label.textContent = state.lastRefreshFailed
+        ? `Last refresh failed - retry in ${state.nextRefreshInSeconds}s`
+        : `Refresh in ${state.nextRefreshInSeconds}s`;
+    }
+
+    function updateHeaderStatus() {
+      const updated = document.getElementById("last-updated");
+      updated.textContent = `Last updated: ${state.lastUpdated ? formatTimestamp(state.lastUpdated) : "--"}`;
+      const warning = document.getElementById("warning-banner");
+      warning.style.display = state.lastRefreshFailed ? "block" : "none";
+      warning.textContent = state.failedPanels.length
+        ? `Could not refresh: ${state.failedPanels.join(", ")}. Other panels are current.`
+        : "";
+      const connectionDot = document.getElementById("connection-dot");
+      connectionDot.classList.toggle("offline", state.lastRefreshFailed);
+      connectionDot.title = state.lastRefreshFailed ? "Partially connected" : "Connected";
+      connectionDot.setAttribute("aria-label", connectionDot.title);
+      setRefreshing(false);
+    }
+
+    function renderEmpty(targetId, message) {
+      document.getElementById(targetId).innerHTML = `<div class="empty-state">${escapeHtml(message)}</div>`;
+    }
+
+    async function fetchJson(url) {
+      const response = await fetch(url, { headers: { "Accept": "application/json" } });
+      if (!response.ok) {
+        throw new Error(`${url} returned HTTP ${response.status}`);
+      }
+      return response.json();
+    }
+
+    async function postJson(url) {
+      const response = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" } });
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || `Request failed: ${response.status}`);
+      }
+      return payload;
+    }
+
+    function renderOverview(overview) {
+      document.getElementById("kpi-published").textContent = String(overview.published_listings ?? 0);
+      document.getElementById("kpi-published-foot").textContent = `${overview.total_listings ?? 0} total listings tracked`;
+      document.getElementById("kpi-designs").textContent = String(overview.total_designs ?? 0);
+      document.getElementById("kpi-designs-foot").textContent = `${overview.total_orders ?? 0} orders recorded`;
+      document.getElementById("kpi-revenue").textContent = formatUsd(overview.total_revenue);
+      document.getElementById("kpi-revenue-foot").textContent = `${(overview.active_niches || []).length} active niches`;
+      document.getElementById("kpi-earnings").textContent = formatUsd(overview.operator_earnings);
+      document.getElementById("kpi-earnings-foot").textContent = "Operator earnings ledger";
+      document.getElementById("kpi-budget").textContent = formatUsd(overview.total_spent);
+      document.getElementById("kpi-budget-foot").textContent = `${formatUsd(overview.remaining_budget)} remaining of ${formatUsd(overview.seed_budget)}`;
+      document.getElementById("kpi-heartbeat").textContent = overview.last_heartbeat ? formatTimestamp(overview.last_heartbeat) : "--";
+      document.getElementById("kpi-heartbeat-foot").textContent = "Last successful timestamp";
+      document.getElementById("kpi-failed-ops").textContent = String(overview.failed_operations_pending ?? 0);
+      document.getElementById("kpi-failed-ops-foot").textContent = overview.failed_operations_pending > 0
+        ? "Retry queue needs attention"
+        : "No unresolved failed ops";
+
+      const seed = Number(overview.seed_budget ?? 0);
+      const remaining = Number(overview.remaining_budget ?? 0);
+      const remainingRatio = seed > 0 ? remaining / seed : 1;
+      const budgetCard = document.getElementById("budget-card");
+      budgetCard.classList.remove("budget-ok", "budget-warn", "budget-danger");
+      if (remainingRatio < 0.10) {
+        budgetCard.classList.add("budget-danger");
+      } else if (remainingRatio < 0.30) {
+        budgetCard.classList.add("budget-warn");
+      } else {
+        budgetCard.classList.add("budget-ok");
+      }
+
+      const failedOpsCard = document.getElementById("failed-ops-card");
+      failedOpsCard.style.borderColor = Number(overview.failed_operations_pending ?? 0) > 0
+        ? "rgba(248, 81, 73, 0.9)"
+        : "rgba(46, 160, 67, 0.45)";
+
+      const providerHealth = overview.provider_health || {};
+      const providerNames = ["etsy", "printful", "replicate", "anthropic", "imgbb"];
+      document.getElementById("provider-health").innerHTML = providerNames.map((name) => {
+        const entry = providerHealth[name];
+        const status = String(entry?.status || "unknown").toLowerCase();
+        const dotClass = status === "ok"
+          ? "provider-ok"
+          : status === "degraded"
+            ? "provider-degraded"
+            : "provider-down";
+        return `<span class="provider-chip"><span class="provider-dot ${dotClass}"></span>${name}</span>`;
+      }).join("");
+    }
+
+    function renderPending(rows) {
+      state.pendingRows = rows;
+      const shell = document.getElementById("pending-panel-shell");
+      const subtitle = document.getElementById("pending-subtitle");
+      subtitle.textContent = `${rows.length} listing${rows.length === 1 ? "" : "s"} awaiting review`;
+
+      if (!rows.length) {
+        shell.classList.remove("visible");
+        document.getElementById("pending-panel").innerHTML = "";
+        return;
+      }
+
+      shell.classList.add("visible");
+      const html = `
+        <div class="pending-list">
+          ${rows.map((row) => `
+            <div class="pending-card" id="pending-card-${row.id}">
+              <img
+                class="pending-image"
+                src="/api/designs/${row.id}/image"
+                alt="${escapeAttr(String(row.title ?? ""))}"
+                tabindex="0"
+                data-lightbox-src="/api/designs/${row.id}/image"
+                onerror="this.onerror=null; this.style.background='#1A1F2E'; this.src=''; this.alt='[ NO PREVIEW ]'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.color='#8B949E'; this.style.fontSize='10px';"
+              >
+              <div>
+                <h3 class="pending-name">${escapeHtml(truncate(String(row.title ?? ""), 48))}</h3>
+                <div class="pending-meta mono">${escapeHtml(row.product_type)} · ${formatUsd(row.price)}</div>
+                <div class="pending-meta">${escapeHtml(truncate(String(row.niche ?? ""), 40))}</div>
+                <div class="pending-tags">${String(row.tags ?? "").split(",").filter(Boolean).length} tags</div>
+                <div class="pending-state">${escapeHtml(truncate(String(row.theme ?? ""), 72))}</div>
+                <div class="pending-error" id="pending-error-${row.id}" style="display:none"></div>
+              </div>
+              <div class="pending-controls">
+                <button class="button button-cyan" type="button" onclick="approveListing(${row.id})">Approve</button>
+                <button class="button button-danger" type="button" onclick="rejectListing(${row.id})">Reject</button>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+      document.getElementById("pending-panel").innerHTML = html;
+    }
+
+    function openLightbox(src) {
+      zoomLevel = 1;
+      lightboxReturnFocus = document.activeElement;
+      const image = document.getElementById("lightbox-img");
+      image.src = src;
+      image.style.transform = "scale(1)";
+      const lightbox = document.getElementById("lightbox");
+      lightbox.style.display = "flex";
+      lightbox.setAttribute("aria-hidden", "false");
+      document.getElementById("lightbox-close").focus();
+    }
+
+    function closeLightbox() {
+      const lightbox = document.getElementById("lightbox");
+      lightbox.style.display = "none";
+      lightbox.setAttribute("aria-hidden", "true");
+      document.getElementById("lightbox-img").src = "";
+      if (lightboxReturnFocus instanceof HTMLElement) {
+        lightboxReturnFocus.focus();
+      }
+    }
+
+    function renderNiches(rows) {
+      if (!rows.length) {
+        renderEmpty("niches-panel", "No niche data yet");
+        return;
+      }
+
+      const html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Niche</th>
+              <th>Listings</th>
+              <th>Revenue</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => `
+              <tr>
+                <td>${escapeHtml(row.name)}</td>
+                <td class="mono">${row.listing_count ?? 0}</td>
+                <td class="mono">${formatUsd(row.total_revenue)}</td>
+                <td>${Number(row.active) === 1
+                  ? '<span><span class="dot dot-active"></span>active</span>'
+                  : '<span><span class="dot dot-paused"></span>paused</span>'}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+      document.getElementById("niches-panel").innerHTML = html;
+    }
+
+    function renderListings(rows) {
+      if (!rows.length) {
+        renderEmpty("listings-panel", "No listings yet");
+        return;
+      }
+
+      const html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => {
+              const status = String(row.status ?? "draft").toLowerCase();
+              const statusClass = status === "published"
+                ? "status-published"
+                : status === "failed" || status === "rejected"
+                  ? "status-failed"
+                  : "status-draft";
+              return `
+                <tr>
+                  <td class="truncate" title="${escapeAttr(String(row.title ?? ""))}">${escapeHtml(truncate(String(row.title ?? ""), 40))}</td>
+                  <td class="mono">${escapeHtml(row.product_type ?? "--")}</td>
+                  <td><span class="status-pill ${statusClass}">${escapeHtml(status)}</span></td>
+                  <td class="mono">${formatUsd(row.price)}</td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      `;
+      document.getElementById("listings-panel").innerHTML = html;
+    }
+
+    function renderCosts(payload) {
+      const rows = payload.categories || [];
+      document.getElementById("costs-subtitle").textContent = `Today ${formatUsd(payload.today_spend)} | 7-day ${formatUsd(payload.seven_day_spend)}`;
+      const hasAnySpend = rows.some((row) => Number(row.spent ?? 0) > 0);
+      if (!rows.length || !hasAnySpend) {
+        renderEmpty("costs-panel", "No spend recorded yet");
+        return;
+      }
+
+      const labelMap = {
+        listing_fee: "Listing fees",
+        image_gen: "Image gen",
+        llm_copy: "LLM copy",
+        marketing: "Marketing",
+        reserve: "Reserve",
+      };
+
+      const html = rows.map((row) => {
+        const percent = Number(row.percent ?? 0);
+        const width = Math.min(percent, 100);
+        const overClass = percent > 100 ? "over" : "";
+        return `
+          <div class="cost-row">
+            <div class="cost-meta">
+              <span>${escapeHtml(labelMap[row.category] || row.category)}</span>
+              <span class="mono">${formatUsd(row.spent)} / ${formatUsd(row.allocated)}</span>
+            </div>
+            <div class="cost-bar">
+              <div class="cost-fill ${overClass}" style="width:${width}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("costs-panel").innerHTML = html;
+    }
+
+    function renderAnalytics(rows) {
+      if (!rows.length) {
+        renderEmpty("analytics-panel", "No analytics yet");
+        return;
+      }
+
+      const topFive = rows.slice(0, 5);
+      const html = `
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Views</th>
+              <th>Favorites</th>
+              <th>Sales</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${topFive.map((row, index) => `
+              <tr>
+                <td class="mono">${index + 1}</td>
+                <td class="truncate" title="${escapeAttr(String(row.title ?? ""))}">${escapeHtml(truncate(String(row.title ?? ""), 34))}</td>
+                <td class="mono">${row.views ?? 0}</td>
+                <td class="mono">${row.favorites ?? 0}</td>
+                <td class="mono">${row.sales ?? 0}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+      document.getElementById("analytics-panel").innerHTML = html;
+    }
+
+    function renderHeartbeat(rows) {
+      if (!rows.length) {
+        renderEmpty("heartbeat-panel", "No heartbeat runs recorded yet");
+        return;
+      }
+
+      const html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Designs</th>
+              <th>Published</th>
+              <th>Cost</th>
+              <th>Claude Calls</th>
+              <th>Errors</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => {
+              const errorCount = Number(row.error_count ?? 0);
+              return `
+                <tr>
+                  <td class="mono">${formatTimestamp(row.created_at)}</td>
+                  <td class="mono">${row.designs_generated ?? 0}</td>
+                  <td class="mono">${row.listings_published ?? 0}</td>
+                  <td class="mono">${formatUsd(row.total_cost_usd)}</td>
+                  <td class="mono">${row.claude_calls ?? 0}</td>
+                  <td class="mono ${errorCount > 0 ? "heartbeat-error" : "heartbeat-clean"}">${errorCount}</td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      `;
+      document.getElementById("heartbeat-panel").innerHTML = html;
+    }
+
+    function buildTrackingUrl(carrier, tracking) {
+      if (!tracking) return null;
+      const code = encodeURIComponent(tracking);
+      const normalized = String(carrier || "").toLowerCase();
+      if (normalized.includes("ups")) return `https://www.ups.com/track?tracknum=${code}`;
+      if (normalized.includes("usps")) return `https://tools.usps.com/go/TrackConfirmAction?tLabels=${code}`;
+      if (normalized.includes("fedex")) return `https://www.fedex.com/fedextrack/?trknbr=${code}`;
+      if (normalized.includes("dhl")) return `https://www.dhl.com/us-en/home/tracking.html?tracking-id=${code}`;
+      return null;
+    }
+
+    function renderOrders(rows) {
+      if (!rows.length) {
+        renderEmpty("orders-panel", "No orders yet");
+        return;
+      }
+
+      const html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Product</th>
+              <th>Buyer</th>
+              <th>Status</th>
+              <th>Tracking</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => {
+              const status = String(row.status ?? "pending").toLowerCase();
+              const statusClass = status === "shipped"
+                ? "status-shipped"
+                : status === "fulfilled"
+                  ? "status-fulfilled"
+                  : status === "failed"
+                    ? "status-failed"
+                    : "status-pending";
+              const trackingUrl = buildTrackingUrl(row.carrier, row.tracking_number);
+              const trackingLabel = row.tracking_number
+                ? (trackingUrl
+                  ? `<a href="${escapeAttr(trackingUrl)}" target="_blank" rel="noreferrer" style="color: var(--cyan);">${escapeHtml(row.tracking_number)}</a>`
+                  : `<span class="mono">${escapeHtml(row.tracking_number)}</span>`)
+                : '<span class="mono">--</span>';
+
+              return `
+                <tr>
+                  <td class="mono">${formatTimestamp(row.created_at)}</td>
+                  <td class="truncate" title="${escapeAttr(String(row.listing_title ?? ""))}">${escapeHtml(truncate(String(row.listing_title ?? "Unknown listing"), 42))}</td>
+                  <td class="truncate" title="${escapeAttr(String(row.buyer_name ?? ""))}">${escapeHtml(truncate(String(row.buyer_name ?? "Unknown buyer"), 28))}</td>
+                  <td><span class="status-pill ${statusClass}">${escapeHtml(status)}</span></td>
+                  <td>${trackingLabel}</td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      `;
+
+      document.getElementById("orders-panel").innerHTML = html;
+    }
+
+    function renderIgm(payload) {
+      const data = payload || {};
+      const status = String(data.status ?? "never_run").toLowerCase();
+      const statusClass = status === "running"
+        ? "status-shipped"
+        : status === "partial"
+          ? "status-pending"
+          : status === "stopped"
+            ? "status-pending"
+            : status === "error"
+              ? "status-failed"
+              : "status-pending";
+      const currency = String(data.currency ?? "USD");
+      const earnings = (data.earnings_usd === null || data.earnings_usd === undefined)
+        ? "Not tracked"
+        : `${currency} ${Number(data.earnings_usd).toFixed(2)}`;
+      const containers = Array.isArray(data.containers) ? data.containers : [];
+      const notes = Array.isArray(data.notes) ? data.notes : [];
+
+      const containerRows = containers.length
+        ? containers.slice(0, 12).map((container) => {
+            const state = String(container.state ?? "").toLowerCase();
+            const dot = state === "running" ? "🟢" : "⚪";
+            return `<tr>
+              <td>${dot} <span class="truncate" title="${escapeAttr(String(container.name ?? ""))}">${escapeHtml(truncate(String(container.name ?? "?"), 32))}</span></td>
+              <td class="mono">${escapeHtml(truncate(String(container.state ?? "--"), 16))}</td>
+            </tr>`;
+          }).join("")
+        : `<tr><td colspan="2" class="mono">No earning apps detected.</td></tr>`;
+
+      const notesHtml = notes.length
+        ? `<ul style="margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 12px;">${notes.map((note) => `<li>${escapeHtml(String(note))}</li>`).join("")}</ul>`
+        : "";
+
+      document.getElementById("igm-panel").innerHTML = `
+        <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: baseline; margin-bottom: 10px;">
+          <div><span class="status-pill ${statusClass}">${escapeHtml(status)}</span></div>
+          <div><strong>${Number(data.running_apps ?? 0)}/${Number(data.total_apps ?? 0)}</strong> apps running</div>
+          <div>Earnings: <strong>${escapeHtml(earnings)}</strong></div>
+          <div class="mono" style="color: var(--muted);">${data.created_at ? formatTimestamp(data.created_at) : "never run"}</div>
+        </div>
+        <table>
+          <thead><tr><th>Earning App</th><th>State</th></tr></thead>
+          <tbody>${containerRows}</tbody>
+        </table>
+        ${notesHtml}
+      `;
+    }
+
+    function renderAudit(rows) {
+      if (!rows.length) {
+        renderEmpty("audit-panel", "No audit activity yet");
+        return;
+      }
+
+      const html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Action</th>
+              <th>Actor</th>
+              <th>Listing</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => {
+              const actor = String(row.actor ?? "system").toLowerCase();
+              const actorClass = actor === "human"
+                ? "status-published"
+                : actor === "jarvis"
+                  ? "status-pending"
+                  : "status-draft";
+              let details = "";
+              try {
+                const parsed = JSON.parse(String(row.details ?? "{}"));
+                details = truncate(JSON.stringify(parsed), 120);
+              } catch {
+                details = truncate(String(row.details ?? ""), 120);
+              }
+
+              return `
+                <tr>
+                  <td class="mono">${formatTimestamp(row.created_at)}</td>
+                  <td class="mono">${escapeHtml(row.action ?? "--")}</td>
+                  <td><span class="status-pill ${actorClass}">${escapeHtml(actor)}</span></td>
+                  <td class="mono">${row.listing_id ?? "--"}</td>
+                  <td title="${escapeAttr(details)}">${escapeHtml(details)}</td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      `;
+
+      document.getElementById("audit-panel").innerHTML = html;
+    }
+
+    async function fetchAll() {
+      if (state.isRefreshing) {
+        return;
+      }
+      setRefreshing(true);
+      try {
+        const panels = [
+          ["overview", "/api/overview", renderOverview],
+          ["pending approvals", "/api/pending", renderPending],
+          ["listings", "/api/listings", renderListings],
+          ["analytics", "/api/analytics", renderAnalytics],
+          ["costs", "/api/costs", renderCosts],
+          ["niches", "/api/niches", renderNiches],
+          ["heartbeat", "/api/heartbeat", renderHeartbeat],
+          ["orders", "/api/orders", renderOrders],
+          ["activity", "/api/audit", renderAudit],
+          ["IGM", "/api/igm", renderIgm],
+        ];
+        const results = await Promise.allSettled(panels.map(([, url]) => fetchJson(url)));
+        const failures = [];
+        let successCount = 0;
+
+        results.forEach((result, index) => {
+          const [name, , renderer] = panels[index];
+          if (result.status === "fulfilled") {
+            renderer(result.value);
+            successCount += 1;
+          } else {
+            failures.push(name);
+            console.error(`Dashboard ${name} refresh failed`, result.reason);
+          }
+        });
+
+        if (successCount > 0) {
+          state.lastUpdated = new Date().toISOString();
+        }
+        state.failedPanels = failures;
+        state.lastRefreshFailed = failures.length > 0;
+        state.nextRefreshInSeconds = 30;
+        updateHeaderStatus();
+      } catch (error) {
+        console.error("Dashboard refresh failed", error);
+        state.lastRefreshFailed = true;
+        state.failedPanels = ["dashboard"];
+        state.nextRefreshInSeconds = 30;
+        updateHeaderStatus();
+      }
+    }
+
+    async function approveListing(id) {
+      const row = state.pendingRows.find((candidate) => Number(candidate.id) === Number(id));
+      const label = truncate(String(row?.title ?? `listing ${id}`), 70);
+      if (!window.confirm(`Publish "${label}" to Etsy and its fulfillment provider?`)) {
+        return;
+      }
+      const card = document.getElementById(`pending-card-${id}`);
+      const errorLine = document.getElementById(`pending-error-${id}`);
+      if (card) {
+        card.querySelectorAll("button").forEach((button) => { button.disabled = true; });
+        const controls = card.querySelector(".pending-controls");
+        const status = controls?.querySelector(".pending-state-progress") ?? document.createElement("div");
+        status.className = "pending-state pending-state-progress";
+        status.textContent = "Publishing...";
+        controls?.appendChild(status);
+      }
+      if (errorLine) {
+        errorLine.textContent = "";
+        errorLine.style.display = "none";
+      }
+
+      try {
+        const result = await postJson(`/api/approve/${id}`);
+        if (result.success === true) {
+          if (card) {
+            card.classList.add("card-fade-out");
+            setTimeout(() => {
+              card.remove();
+              if (!document.querySelector(".pending-card")) {
+                document.getElementById("pending-panel-shell").classList.remove("visible");
+              }
+            }, 200);
+          }
+          await fetchAll();
+          return;
+        }
+
+        if (card) {
+          const approveButton = card.querySelector(".button-cyan");
+          if (approveButton) {
+            approveButton.textContent = "Retry";
+          }
+          card.querySelectorAll("button").forEach((button) => { button.disabled = false; });
+          const status = card.querySelector(".pending-state-progress");
+          status?.remove();
+        }
+        if (errorLine) {
+          errorLine.textContent = result.error || "Approval failed.";
+          errorLine.style.display = "block";
+        }
+      } catch (error) {
+        if (card) {
+          const approveButton = card.querySelector(".button-cyan");
+          if (approveButton) {
+            approveButton.textContent = "Retry";
+          }
+          card.querySelectorAll("button").forEach((button) => { button.disabled = false; });
+          const status = card.querySelector(".pending-state-progress");
+          status?.remove();
+        }
+        if (errorLine) {
+          errorLine.textContent = error instanceof Error ? error.message : String(error);
+          errorLine.style.display = "block";
+        }
+      }
+    }
+
+    async function rejectListing(id) {
+      const row = state.pendingRows.find((candidate) => Number(candidate.id) === Number(id));
+      const label = truncate(String(row?.title ?? `listing ${id}`), 70);
+      if (!window.confirm(`Reject "${label}"? It will leave the approval queue.`)) {
+        return;
+      }
+      try {
+        await postJson(`/api/reject/${id}`);
+        await fetchAll();
+      } catch (error) {
+        alert(error instanceof Error ? error.message : String(error));
+      }
+    }
+
+    async function approveAllListings() {
+      if (!state.pendingRows.length || !window.confirm(`Publish all ${state.pendingRows.length} pending listings? This creates live external products.`)) {
+        return;
+      }
+      const button = document.getElementById("approve-all-button");
+      button.disabled = true;
+      button.textContent = "Approving...";
+      try {
+        await postJson("/api/approve-all");
+        await fetchAll();
+      } catch (error) {
+        alert(error instanceof Error ? error.message : String(error));
+      } finally {
+        button.disabled = false;
+        button.textContent = "Approve All";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("zoom-in").onclick = () => {
+        zoomLevel = Math.min(zoomLevel + 0.25, 4);
+        document.getElementById("lightbox-img").style.transform = `scale(${zoomLevel})`;
+      };
+      document.getElementById("zoom-out").onclick = () => {
+        zoomLevel = Math.max(zoomLevel - 0.25, 0.5);
+        document.getElementById("lightbox-img").style.transform = `scale(${zoomLevel})`;
+      };
+      document.getElementById("zoom-reset").onclick = () => {
+        zoomLevel = 1;
+        document.getElementById("lightbox-img").style.transform = "scale(1)";
+      };
+      document.getElementById("lightbox-close").onclick = closeLightbox;
+      document.getElementById("lightbox-backdrop").onclick = closeLightbox;
+      document.getElementById("lightbox-img").addEventListener("wheel", (event) => {
+        event.preventDefault();
+        zoomLevel = event.deltaY < 0 ? Math.min(zoomLevel + 0.1, 4) : Math.max(zoomLevel - 0.1, 0.5);
+        event.target.style.transform = `scale(${zoomLevel})`;
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeLightbox();
+        }
+        if ((event.key === "Enter" || event.key === " ") && event.target instanceof HTMLImageElement && event.target.matches("img[data-lightbox-src]")) {
+          event.preventDefault();
+          openLightbox(event.target.getAttribute("data-lightbox-src") || event.target.src);
+        }
+      });
+      document.addEventListener("click", (event) => {
+        const image = event.target.closest("img[data-lightbox-src]");
+        if (!(image instanceof HTMLImageElement)) {
+          return;
+        }
+        if (!image.src) {
+          return;
+        }
+        openLightbox(image.getAttribute("data-lightbox-src") || image.src);
+      });
+      document.getElementById("audit-toggle").addEventListener("click", () => {
+        const body = document.getElementById("audit-panel-body");
+        const button = document.getElementById("audit-toggle");
+        const isVisible = body.classList.toggle("visible");
+        button.textContent = isVisible ? "Hide Activity" : "Show Activity";
+      });
+      document.getElementById("approve-all-button").addEventListener("click", approveAllListings);
+      document.getElementById("refresh-button").addEventListener("click", fetchAll);
+      fetchAll();
+      setInterval(() => {
+        state.nextRefreshInSeconds = Math.max(0, state.nextRefreshInSeconds - 1);
+        if (!state.isRefreshing) {
+          setRefreshing(false);
+        }
+      }, 1000);
+      setInterval(() => {
+        state.nextRefreshInSeconds = 30;
+        fetchAll();
+      }, 30000);
+    });
+  </script>
+
+  <script>
+    // ===== Tab switching =====
+    (function () {
+      const buttons = document.querySelectorAll(".tab-btn");
+      const activateTab = (btn) => {
+        const tab = btn.dataset.tab;
+        buttons.forEach((button) => {
+          const active = button === btn;
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-selected", String(active));
+        });
+        document.querySelectorAll(".tab-panel").forEach((panel) => {
+          panel.classList.toggle("active", panel.id === `panel-${tab}`);
+        });
+        history.replaceState(null, "", `#${tab}`);
+      };
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          activateTab(btn);
+        });
+      });
+      const requestedTab = location.hash.replace(/^#/, "");
+      const initialButton = Array.from(buttons).find((button) => button.dataset.tab === requestedTab);
+      if (initialButton) {
+        activateTab(initialButton);
+      }
+    })();
+
+    // ===== Ticker: composed from the live KPI values, refreshed periodically =====
+    function textOf(id) {
+      const el = document.getElementById(id);
+      return el ? el.textContent.trim() : "--";
+    }
+    function updateTicker() {
+      const sep = '<span class="ticker-sep">|</span>';
+      const items = [
+        `PUBLISHED <b>${textOf("kpi-published")}</b>`,
+        `DESIGNS <b>${textOf("kpi-designs")}</b>`,
+        `REVENUE <b>${textOf("kpi-revenue")}</b>`,
+        `EARNINGS <b>${textOf("kpi-earnings")}</b>`,
+        `BUDGET USED <b>${textOf("kpi-budget")}</b>`,
+        `FAILED OPS <b>${textOf("kpi-failed-ops")}</b>`,
+        `LAST HEARTBEAT <b>${textOf("kpi-heartbeat")}</b>`,
+      ];
+      // Duplicate the sequence so the marquee loops seamlessly.
+      const line = items.join(` ${sep} `);
+      const track = document.getElementById("ticker-track");
+      if (track) track.innerHTML = `${line} ${sep} ${line} ${sep} `;
+    }
+    setInterval(updateTicker, 4000);
+    setTimeout(updateTicker, 1500);
+
+    // ===== Ops controls =====
+    (function () {
+      const out = document.getElementById("ops-output");
+      const setOut = (msg) => { if (out) out.textContent = `${new Date().toLocaleTimeString()}  ${msg}`; };
+      document.querySelectorAll(".ops-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const op = btn.dataset.op;
+          const confirmations = {
+            heartbeat: "Run a full autonomous heartbeat now? This can generate paid assets and create approval-queue listings.",
+            "daemon-start": "Start continuous autonomous operation?",
+            "daemon-stop": "Stop the autonomous daemon?",
+          };
+          if (confirmations[op] && !window.confirm(confirmations[op])) {
+            return;
+          }
+          const original = btn.textContent;
+          btn.disabled = true;
+          setOut(`Running ${op}...`);
+          try {
+            const res = await fetch(`/api/ops/${op}`, { method: "POST" });
+            const data = await res.json().catch(() => ({}));
+            setOut(data.message || (res.ok ? `${op} started.` : `${op} failed (${res.status}).`));
+          } catch (err) {
+            setOut(`${op} error: ${err}`);
+          } finally {
+            setTimeout(() => { btn.disabled = false; btn.textContent = original; }, 1200);
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

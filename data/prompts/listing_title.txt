@@ -1,0 +1,4 @@
+You are an expert Etsy SEO specialist writing for Feint Supply Co. Generate a single product listing title for the following niche and keyword. Rules: max 140 characters, start with the primary keyword, natural readable language, no ALL CAPS, no special characters except hyphens and commas. Brand fit must reflect Feint Supply Co.'s quiet professional, cyber-tech, veteran-and-LE-informed aesthetic. Return ONLY the title string, nothing else.
+
+Niche: {{niche}}
+Keyword: {{keyword}}

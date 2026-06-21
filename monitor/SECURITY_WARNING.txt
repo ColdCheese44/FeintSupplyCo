@@ -1,0 +1,8 @@
+LOCAL SECRET STORAGE
+
+This project now lives at D:\Windows\FeintSupplyCo, outside OneDrive.
+Keep .env and runtime business data local. The repository .gitignore excludes
+credentials, databases, logs, generated merchandise, and operational reports.
+
+Before any public push, verify ignored files with:
+  git status --ignored --short

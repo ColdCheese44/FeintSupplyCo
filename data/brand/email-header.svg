@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="200" viewBox="0 0 600 200">
+    <rect width="600" height="200" fill="#0D1117" />
+    <rect x="0" y="0" width="4" height="200" fill="#00D4FF" />
+    <line x1="0" y1="35" x2="600" y2="35" stroke="#00D4FF" stroke-width="0.8" stroke-opacity="0.2" />
+    <line x1="0" y1="165" x2="600" y2="165" stroke="#00D4FF" stroke-width="0.8" stroke-opacity="0.2" />
+    <text x="30" y="108" fill="#E8E8E8" font-family="Space Grotesk, Arial, sans-serif" font-size="38" font-weight="700" letter-spacing="8">FEINT SUPPLY CO.</text>
+    <text x="32" y="138" fill="#00D4FF" font-family="JetBrains Mono, Courier New, monospace" font-size="14">Signal over noise.</text>
+  </svg>

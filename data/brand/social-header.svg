@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="500" viewBox="0 0 1500 500">
+    
+    <defs>
+      <pattern id="grid" patternUnits="userSpaceOnUse" width="50" height="50">
+        <path d="M 0 50 L 50 50" stroke="#1A1F2E" stroke-width="0.5" fill="none" />
+        <path d="M 50 0 L 50 50" stroke="#1A1F2E" stroke-width="0.5" fill="none" />
+      </pattern>
+    </defs>
+  
+    <rect width="1500" height="500" fill="#0D1117" />
+    <rect width="1500" height="500" fill="url(#grid)" />
+    <rect x="0" y="0" width="4" height="500" fill="#00D4FF" />
+    <text x="90" y="215" fill="#E8E8E8" font-family="Space Grotesk, Arial, sans-serif" font-size="56" font-weight="700" letter-spacing="10">FEINT SUPPLY CO.</text>
+    <line x1="90" y1="245" x2="840" y2="245" stroke="#00D4FF" stroke-width="1" stroke-opacity="0.5" />
+    <text x="92" y="285" fill="#00D4FF" font-family="JetBrains Mono, Courier New, monospace" font-size="22">Signal over noise.</text>
+    <text x="1390" y="460" text-anchor="end" fill="#F5A623" font-family="JetBrains Mono, Courier New, monospace" font-size="14">VETERAN OWNED</text>
+  </svg>

@@ -1,0 +1,38 @@
+[
+  {
+    "productType": "t-shirt",
+    "storeProductName": "Printful Tee Backup",
+    "variantIds": [
+      4011,
+      4012,
+      4013
+    ],
+    "defaultBaseCost": 9.25
+  },
+  {
+    "productType": "sticker",
+    "storeProductName": "Printful Kiss-Cut Sticker",
+    "variantIds": [],
+    "defaultBaseCost": 4
+  },
+  {
+    "productType": "mug",
+    "storeProductName": "Printful Ceramic Mug",
+    "variantIds": [],
+    "defaultBaseCost": 6.75
+  },
+  {
+    "productType": "poster",
+    "storeProductName": "Printful Poster Backup",
+    "variantIds": [
+      6320
+    ],
+    "defaultBaseCost": 11.5
+  },
+  {
+    "productType": "hoodie",
+    "storeProductName": "Printful Hoodie",
+    "variantIds": [],
+    "defaultBaseCost": 24
+  }
+]

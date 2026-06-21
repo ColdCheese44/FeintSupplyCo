@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3360" height="840" viewBox="0 0 3360 840">
+    <g fill="none" stroke="#F5A623" stroke-width="3" stroke-linecap="round">
+      <path d="M 200 310 L 224 322" />
+      <path d="M 200 334 L 224 322" />
+    </g>
+    <text x="200" y="375" fill="#E8E8E8" font-family="Space Grotesk, Arial, sans-serif" font-size="88" font-weight="700" letter-spacing="14">FEINT SUPPLY CO.</text>
+    <line x1="200" y1="392" x2="1100" y2="392" stroke="#00D4FF" stroke-width="1" stroke-opacity="0.5" />
+    <text x="202" y="435" fill="#00D4FF" font-family="Arial, Helvetica, sans-serif" font-style="italic" font-size="28">Signal over noise.</text>
+    <text x="3140" y="790" text-anchor="end" fill="#F5A623" font-family="JetBrains Mono, Courier New, monospace" font-size="16">VETERAN OWNED</text>
+  </svg>

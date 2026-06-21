@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+    <circle cx="250" cy="250" r="238" fill="#0D1117" stroke="#00D4FF" stroke-width="2" />
+    <text x="250" y="290" text-anchor="middle" fill="#E8E8E8" font-family="Space Grotesk, Arial, sans-serif" font-size="118" font-weight="700" letter-spacing="8">FSC</text>
+    <line x1="110" y1="312" x2="390" y2="312" stroke="#00D4FF" stroke-width="1.5" />
+    <circle cx="250" cy="330" r="3" fill="#F5A623" />
+  </svg>

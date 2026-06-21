@@ -1,0 +1,37 @@
+Free API Keys Worth Getting
+Image Generation / Design
+
+Hugging Face Inference API — free tier, hundreds of models including FLUX variants
+Stability AI — free credits on signup (Stable Diffusion, SDXL)
+Clipdrop API (by Stability) — free tier, background removal, upscaling
+Unsplash API — free, high-quality photos for mockup backgrounds
+Pexels API — free, same use case as Unsplash
+Pixabay API — free, photos + vectors + illustrations
+
+Trend Research
+
+Google Trends via pytrends — no key, already wired in
+Wikipedia Pageviews — no key, already wired in
+YouTube Data API v3 — free, 10,000 units/day (already stubbed in project)
+Spotify Web API — free (already stubbed in project)
+NewsAPI — free tier, 100 requests/day, good for trending topics
+Google Custom Search API — free, 100 queries/day
+
+AI / LLM (cheap or free)
+
+Groq API — free tier, extremely fast inference on Llama/Mixtral
+Google Gemini API — free tier available (Nano Banana 2 image gen too)
+Mistral AI — free tier
+Cohere — free tier, good for classification/embeddings
+
+Product Expansion
+
+Printful API — free to use (already stubbed)
+Gelato API — free to use, strong EU fulfillment (already stubbed)
+Gooten API — free, third POD option
+
+Marketing
+
+Pinterest API — already have, finish setup
+Buffer API — free tier, cross-platform scheduling (already stubbed)
+Mailchimp / ConvertKit — free tiers for email marketing

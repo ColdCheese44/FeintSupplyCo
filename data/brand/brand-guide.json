@@ -1,0 +1,26 @@
+{
+  "store_name": "Feint Supply Co.",
+  "tagline": "Built different. By people who were.",
+  "alt_taglines": [
+    "Service background. Modern execution.",
+    "For those who already know.",
+    "Earned aesthetic. No explanation needed."
+  ],
+  "brand_voice": "Quiet authority. No performative toughness. Insider references without chest-beating. Speaks directly to people who served or protected and the tech community that respects that background. Dry wit when appropriate. Never trying too hard.",
+  "primary_color": "#0D1117",
+  "secondary_color": "#00D4FF",
+  "accent_color": "#F5A623",
+  "background_color": "#1A1F2E",
+  "text_color": "#E8E8E8",
+  "font_primary": "Space Grotesk",
+  "font_secondary": "JetBrains Mono",
+  "visual_style": "Dark minimal precision. Clean geometry. Terminal and code aesthetic accents. Service background expressed through restraint not decoration. Redacted documents, signal intelligence, clean schematics, operator-grade minimalism. No camouflage, no aggressive typography, no surplus store visuals.",
+  "logo_prompt": "Minimal modern logo for Feint Supply Co. Near-black background (#0D1117). Store name in clean bold sans-serif Space Grotesk style. Electric cyan (#00D4FF) accent - a single clean geometric element such as a signal chevron, thin horizontal rule, or minimal badge outline. No flags, no weapons, no camouflage. Precision over decoration. Feels like a cybersecurity firm founded by someone who served. Square format, transparent background, vector-clean edges.",
+  "banner_prompt": "Wide horizontal banner for Feint Supply Co. Near-black background with subtle dark navy gradient. Store name in large clean sans-serif white text. Thin cyan accent line below the name. Tagline 'Built different. By people who were.' in JetBrains Mono below. Very subtle background texture - faint hexagonal grid or circuit trace pattern at 10% opacity. 3360x840px. Professional, modern, no military surplus visual language.",
+  "icon_prompt": "Square icon for Feint Supply Co. Dark near-black background. Minimal geometric mark - a simplified signal chevron or stylized FSC initials in Space Grotesk. Cyan (#00D4FF) accent on near-black. No decorative elements. Feels like a cybersecurity firm or precision tech brand logo. 400x400px.",
+  "pinterest_template_prompt": "Vertical Pinterest pin template for Feint Supply Co. Dark navy background (#1A1F2E). Thin cyan border lines - precise and minimal. Store name in small Space Grotesk at top. Open center space for product image overlay. Subtle terminal-style grid texture at 8% opacity. 1000x1500px. Modern, dark, professional.",
+  "social_header_prompt": "Horizontal social media header for Feint Supply Co. 1500x500px. Same dark minimal language as banner - near-black, cyan accent, clean typography. Tagline visible. No clutter.",
+  "email_header_prompt": "Email header for Feint Supply Co. 600x200px. Dark background, store name, thin cyan rule, tagline in mono font. Clean and minimal.",
+  "watermark_prompt": "Minimal watermark for Feint Supply Co. FSC initials in Space Grotesk bold. White at 25% opacity. No background. Suitable for overlaying product photos without distraction.",
+  "design_style_instruction": "All product designs for Feint Supply Co. follow these rules. COLORS: near-black (#0D1117) and dark navy (#1A1F2E) as base, electric cyan (#00D4FF) or signal amber (#F5A623) as accents, off-white (#E8E8E8) for text on dark. FORBIDDEN colors: OD green as primary, camouflage patterns, oversaturated flag colorways. TYPOGRAPHY: modern sans-serif or monospace only - Space Grotesk, Inter, JetBrains Mono. FORBIDDEN fonts: stencil, gothic, blackletter, aggressive condensed military fonts. AESTHETIC: clean geometry, precision lines, minimal decoration, insider references the community recognizes, technical schematic elements, redacted text aesthetics, terminal and command-line references, signal and comms iconography. CONTENT THAT WORKS: veteran and LE humor with modern delivery, cybersecurity and service culture crossover, quiet professional ethos, dark wit and understatement. CONTENT TO AVOID: Punisher skulls, We the People designs, generic flag t-shirts, anything that looks like a surplus store shelf."
+}

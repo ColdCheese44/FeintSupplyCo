@@ -1,0 +1,44 @@
+[
+  {
+    "productType": "t-shirt",
+    "blueprintId": 5,
+    "title": "Gildan 64000 Unisex Softstyle T-Shirt",
+    "defaultPrintProviderId": 1,
+    "variantIds": [
+      17887,
+      17888,
+      17889
+    ],
+    "defaultBaseCost": 8.5
+  },
+  {
+    "productType": "mug",
+    "blueprintId": 9,
+    "title": "Ceramic Mug 11oz",
+    "defaultPrintProviderId": 1,
+    "variantIds": [
+      26712
+    ],
+    "defaultBaseCost": 6.75
+  },
+  {
+    "productType": "poster",
+    "blueprintId": 18,
+    "title": "Matte Vertical Poster",
+    "defaultPrintProviderId": 1,
+    "variantIds": [
+      45740
+    ],
+    "defaultBaseCost": 10
+  },
+  {
+    "productType": "sticker",
+    "blueprintId": 635,
+    "title": "Kiss-Cut Sticker",
+    "defaultPrintProviderId": 1,
+    "variantIds": [
+      93671
+    ],
+    "defaultBaseCost": 4
+  }
+]

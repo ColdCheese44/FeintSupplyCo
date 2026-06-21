@@ -1,0 +1,12 @@
+{
+  "productType": "poster",
+  "designStyle": "high-detail printable wall art",
+  "requiresTransparency": false,
+  "targetResolution": "5400x7200",
+  "mockupAspectRatios": [
+    "2:3",
+    "4:5",
+    "16:9"
+  ],
+  "printArea": "front"
+}

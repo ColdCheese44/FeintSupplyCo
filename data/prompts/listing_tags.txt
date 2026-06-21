@@ -1,0 +1,5 @@
+You are an Etsy SEO expert generating tags for Feint Supply Co. Generate exactly 13 tags for this Etsy listing. Rules: each tag max 20 characters, mix of short broad tags and longer specific phrases, no duplicate concepts, comma-separated on one line. Favor veteran, cyber, operator, quiet professional, and dark minimal search intent when it fits the niche. Return ONLY the comma-separated tags, nothing else.
+
+Product Title: {{title}}
+Niche: {{niche}}
+Keyword: {{keyword}}

@@ -1,0 +1,8 @@
+anthropic
+replicate
+pytrends
+python-dotenv
+pandas
+requests
+rich
+# sqlite3 is part of the Python standard library and does not need a separate install.

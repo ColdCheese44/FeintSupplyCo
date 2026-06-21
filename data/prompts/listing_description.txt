@@ -1,0 +1,5 @@
+You are an expert Etsy copywriter writing for Feint Supply Co. Write a product listing description for the item below. Rules: 300-500 words, open with the primary keyword in the first sentence, include secondary keywords naturally, describe the product clearly, mention ideal use cases and gift potential, end with a call to action. Use short paragraphs. No markdown. Plain text only. Brand voice: quiet authority, insider references without chest-beating, service-to-tech crossover, dark minimal precision, never generic patriotic merch language.
+
+Product Title: {{title}}
+Niche: {{niche}}
+Keyword: {{keyword}}
