@@ -2,7 +2,7 @@ import "dotenv/config";
 
 import { pathToFileURL } from "node:url";
 
-import { getListingByEtsyListingId, getPodProductByListingId, getRecentOrders, getConsecutiveShippingErrorCount, initializeDatabase, pausePublishing, upsertOrder } from "../lib/db.js";
+import { getListingByEtsyListingId, getOrderByReceiptId, getPodProductByListingId, getRecentOrders, getConsecutiveShippingErrorCount, initializeDatabase, pausePublishing, upsertOrder } from "../lib/db.js";
 import { auditLog } from "../lib/audit.js";
 import { recordFailure } from "../lib/dead-letter.js";
 import { postDiscordText } from "../lib/discord.js";
@@ -25,53 +25,6 @@ const logger = createLogger("order-orchestrator");
  */
 async function postDiscordAlert(message: string): Promise<void> {
   await postDiscordText("orders", message);
-}
-
-/**
- * Splits a buyer full name into first and last name pieces that POD providers require.
- */
-function splitBuyerName(name: string | undefined): { firstName: string; lastName: string } {
-  const parts = (name ?? "Etsy Buyer").trim().split(/\s+/).filter(Boolean);
-  return {
-    firstName: parts[0] ?? "Etsy",
-    lastName: parts.slice(1).join(" ") || "Buyer",
-  };
-}
-
-/**
- * Creates the address payload shape Printify expects from an Etsy receipt record.
- */
-function buildPrintifyAddress(receipt: EtsyReceiptRecord): {
-  first_name: string;
-  last_name: string;
-  email: string;
-  country: string;
-  region?: string;
-  city: string;
-  address1: string;
-  address2?: string;
-  zip: string;
-  phone?: string;
-} {
-  const name = splitBuyerName(receipt.name);
-  return {
-    first_name: name.firstName,
-    last_name: name.lastName,
-    email: `${receipt.buyer_user_id ?? "buyer"}@etsy.local`,
-    country: receipt.country_iso ?? "US",
-    region: receipt.state,
-    city: receipt.city ?? "Unknown",
-    address1: receipt.first_line ?? "Unknown",
-    address2: receipt.second_line,
-    zip: receipt.zip ?? "00000",
-  };
-}
-
-/**
- * Calculates listing-level profit for a line item using the stored POD base cost metadata.
- */
-function calculateProfit(totalAmount: number, quantity: number, baseCost: number): number {
-  return Number((totalAmount - baseCost * quantity).toFixed(2));
 }
 
 /**
@@ -136,35 +89,63 @@ async function createProviderOrder(receipt: EtsyReceiptRecord): Promise<{
   profitAmount: number;
   listingTitle: string;
 }> {
-  const transaction = receipt.transactions?.[0];
-  if (!transaction?.listing_id) {
-    throw new Error(`Receipt ${receipt.receipt_id} did not include a listing ID to match against local products.`);
+  const transactions = (receipt.transactions ?? []).filter((transaction) => transaction.listing_id);
+  if (transactions.length === 0) {
+    throw new Error(`Receipt ${receipt.receipt_id} did not include listing IDs to match against local products.`);
   }
 
-  const listing = getListingByEtsyListingId(String(transaction.listing_id));
-  if (!listing) {
-    throw new Error(`No local listing matched Etsy listing ${transaction.listing_id}.`);
+  const resolvedItems: Array<{
+    listingId: number;
+    designId: number | null;
+    title: string;
+    syncVariantId: number;
+    quantity: number;
+    baseCost: number;
+  }> = [];
+  const manualTitles: string[] = [];
+
+  for (const transaction of transactions) {
+    const listing = getListingByEtsyListingId(String(transaction.listing_id));
+    if (!listing) {
+      throw new Error(`No local listing matched Etsy listing ${transaction.listing_id}.`);
+    }
+
+    const podProduct = getPodProductByListingId(listing.id);
+    const title = transaction.title ?? listing.title;
+    if (!podProduct?.printful_product_id) {
+      manualTitles.push(title);
+      continue;
+    }
+
+    resolvedItems.push({
+      listingId: listing.id,
+      designId: listing.design_id,
+      title,
+      syncVariantId: await resolvePrintfulSyncVariantId(podProduct.printful_product_id, transaction),
+      quantity: Math.max(1, Number(transaction.quantity ?? 1)),
+      baseCost: podProduct.base_cost ?? 0,
+    });
   }
 
-  const podProduct = getPodProductByListingId(listing.id);
-  const quantity = Number(transaction.quantity ?? 1);
-  const totalAmount = Number(receipt.grandtotal ?? transaction.price ?? 0);
-  const listingTitle = transaction.title ?? listing.title;
-  const profitAmount = calculateProfit(totalAmount, quantity, podProduct?.base_cost ?? 0);
+  const listingTitle = transactions.length === 1
+    ? (transactions[0].title ?? resolvedItems[0]?.title ?? manualTitles[0] ?? "Etsy item")
+    : `${transactions.length} items: ${transactions.map((transaction) => transaction.title ?? "Etsy item").join(", ")}`;
+  const totalAmount = Number(receipt.grandtotal ?? 0);
+  const totalBaseCost = resolvedItems.reduce((sum, item) => sum + (item.baseCost * item.quantity), 0);
+  const profitAmount = Number((totalAmount - totalBaseCost).toFixed(2));
 
-  if (!podProduct?.printful_product_id) {
+  if (manualTitles.length > 0) {
     const orderUrl = `https://www.etsy.com/your/orders/sold?order_id=${receipt.receipt_id}`;
     await postDiscordAlert(
-      `MANUAL FULFILLMENT NEEDED:\n${listingTitle} - no POD mapping. Etsy order: ${orderUrl}`,
+      `MANUAL FULFILLMENT NEEDED:\n${manualTitles.join(", ")} - no POD mapping. No part of this receipt was auto-submitted, preventing split or duplicate fulfillment. Etsy order: ${orderUrl}`,
     );
     return {
       provider: "manual",
-      profitAmount,
+      profitAmount: 0,
       listingTitle,
     };
   }
 
-  const syncVariantId = await resolvePrintfulSyncVariantId(podProduct.printful_product_id, transaction);
   const printfulOrder = await createPrintfulOrder({
     externalId: String(receipt.receipt_id),
     recipient: {
@@ -175,25 +156,24 @@ async function createProviderOrder(receipt: EtsyReceiptRecord): Promise<{
       state_code: receipt.state,
       country_code: receipt.country_iso ?? "US",
       zip: receipt.zip ?? "00000",
-      email: `${receipt.buyer_user_id ?? "buyer"}@etsy.local`,
     },
-    items: [
-      {
-        sync_variant_id: syncVariantId,
-        quantity,
-      },
-    ],
+    items: resolvedItems.map((item) => ({
+      sync_variant_id: item.syncVariantId,
+      quantity: item.quantity,
+    })),
   });
 
   await postDiscordAlert(
     `ORDER FULFILLED: ${listingTitle}\nPrintful order ${printfulOrder.id} created. Ships to ${receipt.city ?? "Unknown city"}`,
   );
+  const singleItem = resolvedItems.length === 1 ? resolvedItems[0] : null;
   auditLog("fulfill", "jarvis", {
     provider: "printful",
     receiptId: receipt.receipt_id,
     printfulOrderId: printfulOrder.id,
     city: receipt.city ?? "Unknown city",
-  }, listing.id, listing.design_id ?? undefined);
+    itemCount: resolvedItems.length,
+  }, singleItem?.listingId, singleItem?.designId ?? undefined);
 
   return {
     provider: "printful",
@@ -209,7 +189,9 @@ async function createProviderOrder(receipt: EtsyReceiptRecord): Promise<{
  * Polls open provider orders and pushes new tracking codes back to Etsy when they appear.
  */
 async function refreshOpenOrderStatuses(): Promise<number> {
-  const recentOrders = getRecentOrders(50).filter((order) => order.printful_order_id && !order.tracking_number);
+  const recentOrders = getRecentOrders(50).filter(
+    (order) => (order.printful_order_id || order.printify_order_id) && !order.tracking_number,
+  );
   let trackingUpdates = 0;
 
   for (const order of recentOrders) {
@@ -308,7 +290,7 @@ export async function runOrderOrchestrator(): Promise<OrderOrchestratorSummary> 
   const receipts = await listShopReceipts(25);
 
   for (const receipt of receipts) {
-    const existingOrder = getRecentOrders(100).find((order) => order.etsy_receipt_id === String(receipt.receipt_id));
+    const existingOrder = getOrderByReceiptId(String(receipt.receipt_id));
     if (existingOrder) {
       continue;
     }

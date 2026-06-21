@@ -131,22 +131,32 @@ export function getBudgetSnapshot(): BudgetSnapshot {
 
   const grossRevenue = Number((db.prepare(`SELECT COALESCE(SUM(total_amount), 0) AS total FROM orders`).get() as { total: number }).total ?? 0);
   const netProfit = Number((db.prepare(`SELECT COALESCE(SUM(profit_amount), 0) AS total FROM orders`).get() as { total: number }).total ?? 0);
-  const totalSpentUsd = Number((db.prepare(`
-    SELECT COALESCE(SUM(amount_usd), 0) AS total
-    FROM budget_ledger
-    WHERE amount_usd > 0
-      AND category != 'operator_earnings'
+  const llmTextSpent = Number((db.prepare(`
+    SELECT COALESCE(SUM(cost_usd), 0) AS total
+    FROM llm_calls
+    WHERE provider IN ('claude', 'openai')
   `).get() as { total: number }).total ?? 0);
+  const imageGenerationSpent = Number((db.prepare(`
+    SELECT COALESCE(SUM(cost_usd), 0) AS total
+    FROM llm_calls
+    WHERE provider NOT IN ('claude', 'openai')
+  `).get() as { total: number }).total ?? 0);
+  const marketingSpent = Number((db.prepare(`
+    SELECT COALESCE(SUM(cost_usd), 0) AS total
+    FROM marketing_events
+  `).get() as { total: number }).total ?? 0);
+  const listingFeeSpent = getBudgetLedgerTotal("listing_fee");
+  const totalSpentUsd = listingFeeSpent + llmTextSpent + imageGenerationSpent + marketingSpent;
   const reinvestedUsd = Math.abs(getBudgetLedgerTotal("reserve")) + Math.abs(getBudgetLedgerTotal("scale_winners")) + Math.abs(getBudgetLedgerTotal("explore_new"))
     + Math.abs(getBudgetLedgerTotal("quality_upgrade")) + Math.abs(getBudgetLedgerTotal("etsy_ads"))
     + Math.abs(getBudgetLedgerTotal("trademark_reserve")) + Math.abs(getBudgetLedgerTotal("platform_expansion_reserve"));
   const operatorEarningsUsd = getBudgetLedgerTotal("operator_earnings");
 
   const categorySpent: Record<string, number> = {
-    listing_fee: getBudgetLedgerTotal("listing_fee"),
-    image_gen: getBudgetLedgerTotal("image_gen"),
-    llm_copy: getBudgetLedgerTotal("llm_copy"),
-    marketing: getBudgetLedgerTotal("marketing"),
+    listing_fee: listingFeeSpent,
+    image_gen: imageGenerationSpent,
+    llm_copy: llmTextSpent,
+    marketing: marketingSpent,
     reserve: getBudgetLedgerTotal("reserve"),
   };
   const categoryCaps = Object.fromEntries(

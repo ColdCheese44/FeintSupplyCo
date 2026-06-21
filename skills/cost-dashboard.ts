@@ -69,7 +69,11 @@ const logger = createLogger("cost-dashboard");
  * Reads a numeric environment value while preserving a safe fallback.
  */
 function readNumber(value: string | undefined, fallback: number): number {
-  const parsed = Number(value ?? "");
+  const normalized = value?.trim();
+  if (!normalized) {
+    return fallback;
+  }
+  const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
@@ -216,11 +220,11 @@ function loadLiveSnapshot(): CostDashboardSnapshot {
   const todayWindow = "datetime('now', 'start of day')";
   const sevenDayWindow = "datetime('now', '-7 days')";
 
-  const llmToday = Number((db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS total FROM llm_calls WHERE created_at >= ${todayWindow}`).get() as { total: number }).total ?? 0);
-  const llmSevenDay = Number((db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS total FROM llm_calls WHERE created_at >= ${sevenDayWindow}`).get() as { total: number }).total ?? 0);
+  const llmToday = Number((db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS total FROM llm_calls WHERE provider IN ('claude', 'openai') AND created_at >= ${todayWindow}`).get() as { total: number }).total ?? 0);
+  const llmSevenDay = Number((db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS total FROM llm_calls WHERE provider IN ('claude', 'openai') AND created_at >= ${sevenDayWindow}`).get() as { total: number }).total ?? 0);
 
-  const imageToday = Number((db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS total FROM designs WHERE created_at >= ${todayWindow}`).get() as { total: number }).total ?? 0);
-  const imageSevenDay = Number((db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS total FROM designs WHERE created_at >= ${sevenDayWindow}`).get() as { total: number }).total ?? 0);
+  const imageToday = Number((db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS total FROM llm_calls WHERE provider NOT IN ('claude', 'openai') AND created_at >= ${todayWindow}`).get() as { total: number }).total ?? 0);
+  const imageSevenDay = Number((db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS total FROM llm_calls WHERE provider NOT IN ('claude', 'openai') AND created_at >= ${sevenDayWindow}`).get() as { total: number }).total ?? 0);
 
   const marketingToday = Number((db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS total FROM marketing_events WHERE created_at >= ${todayWindow}`).get() as { total: number }).total ?? 0);
   const marketingSevenDay = Number((db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS total FROM marketing_events WHERE created_at >= ${sevenDayWindow}`).get() as { total: number }).total ?? 0);
@@ -236,11 +240,13 @@ function loadLiveSnapshot(): CostDashboardSnapshot {
     FROM (
       SELECT 'LLM' AS category, task_type || ' via ' || model AS label, cost_usd, created_at AS occurred_at
       FROM llm_calls
-      WHERE created_at >= ${todayWindow}
+      WHERE provider IN ('claude', 'openai')
+        AND created_at >= ${todayWindow}
       UNION ALL
-      SELECT 'Image gen' AS category, theme || ' (' || product_type || ')' AS label, cost_usd, created_at AS occurred_at
-      FROM designs
-      WHERE created_at >= ${todayWindow}
+      SELECT 'Image gen' AS category, task_type || ' via ' || model AS label, cost_usd, created_at AS occurred_at
+      FROM llm_calls
+      WHERE provider NOT IN ('claude', 'openai')
+        AND created_at >= ${todayWindow}
       UNION ALL
       SELECT 'Marketing' AS category, channel || ' / ' || action AS label, cost_usd, created_at AS occurred_at
       FROM marketing_events

@@ -293,26 +293,32 @@ function loadCosts(): Record<string, unknown> {
     today_spend: 0,
     seven_day_spend: 0,
   }, (db) => {
-    const grouped = db.prepare(`
-      SELECT category, COALESCE(SUM(amount_usd), 0) AS spent
-      FROM budget_ledger
-      GROUP BY category
-    `).all() as Array<{ category: string; spent: number }>;
-
-    const spentByCategory = new Map(grouped.map((row) => [row.category, Number(row.spent ?? 0)]));
+    const actualSpend = db.prepare(`
+      SELECT
+        (SELECT COALESCE(SUM(amount_usd), 0) FROM budget_ledger WHERE category = 'listing_fee') AS listing_fee,
+        (SELECT COALESCE(SUM(cost_usd), 0) FROM llm_calls WHERE provider NOT IN ('claude', 'openai')) AS image_gen,
+        (SELECT COALESCE(SUM(cost_usd), 0) FROM llm_calls WHERE provider IN ('claude', 'openai')) AS llm_copy,
+        (SELECT COALESCE(SUM(cost_usd), 0) FROM marketing_events) AS marketing,
+        (SELECT COALESCE(SUM(amount_usd), 0) FROM budget_ledger WHERE category = 'reserve') AS reserve
+    `).get() as Record<string, number>;
+    const spentByCategory = new Map(
+      Object.entries(actualSpend).map(([category, spent]) => [category, Number(spent ?? 0)]),
+    );
 
     const todayRow = db.prepare(`
-      SELECT COALESCE(SUM(amount_usd), 0) AS total
-      FROM budget_ledger
-      WHERE timestamp >= datetime('now', 'start of day')
-        AND category <> 'operator_earnings'
+      SELECT
+        (SELECT COALESCE(SUM(cost_usd), 0) FROM llm_calls WHERE created_at >= datetime('now', 'start of day'))
+        + (SELECT COALESCE(SUM(cost_usd), 0) FROM marketing_events WHERE created_at >= datetime('now', 'start of day'))
+        + (SELECT COALESCE(SUM(amount_usd), 0) FROM budget_ledger WHERE category = 'listing_fee' AND timestamp >= datetime('now', 'start of day'))
+        AS total
     `).get() as { total: number };
 
     const sevenDayRow = db.prepare(`
-      SELECT COALESCE(SUM(amount_usd), 0) AS total
-      FROM budget_ledger
-      WHERE timestamp >= datetime('now', '-7 days')
-        AND category <> 'operator_earnings'
+      SELECT
+        (SELECT COALESCE(SUM(cost_usd), 0) FROM llm_calls WHERE created_at >= datetime('now', '-7 days'))
+        + (SELECT COALESCE(SUM(cost_usd), 0) FROM marketing_events WHERE created_at >= datetime('now', '-7 days'))
+        + (SELECT COALESCE(SUM(amount_usd), 0) FROM budget_ledger WHERE category = 'listing_fee' AND timestamp >= datetime('now', '-7 days'))
+        AS total
     `).get() as { total: number };
 
     const categories: CostCategoryRow[] = Object.entries(allocations).map(([category, allocated]) => {
