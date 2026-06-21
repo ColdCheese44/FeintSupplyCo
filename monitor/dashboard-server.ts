@@ -194,7 +194,11 @@ function loadOverview(): Record<string, unknown> {
         (SELECT COUNT(*) FROM orders) AS total_orders,
         (SELECT COALESCE(SUM(total_amount), 0) FROM orders) AS total_revenue,
         (SELECT COALESCE(SUM(amount_usd), 0) FROM budget_ledger WHERE category = 'operator_earnings') AS operator_earnings,
-        (SELECT COALESCE(SUM(amount_usd), 0) FROM budget_ledger WHERE category <> 'operator_earnings') AS total_spent,
+        (
+          (SELECT COALESCE(SUM(cost_usd), 0) FROM llm_calls)
+          + (SELECT COALESCE(SUM(cost_usd), 0) FROM marketing_events)
+          + (SELECT COALESCE(SUM(amount_usd), 0) FROM budget_ledger WHERE category = 'listing_fee')
+        ) AS total_spent,
         (SELECT COUNT(*) FROM listings WHERE status = 'pending_approval') AS pending_approval_count
     `).get() as {
       total_listings: number;
@@ -224,7 +228,7 @@ function loadOverview(): Record<string, unknown> {
       operator_earnings: Number(totals.operator_earnings ?? 0),
       seed_budget: seedBudget,
       total_spent: totalSpent,
-      remaining_budget: Number((seedBudget - totalSpent).toFixed(2)),
+      remaining_budget: Number(Math.max(seedBudget - totalSpent, 0).toFixed(2)),
       last_heartbeat: readLastHeartbeatTimestamp(),
       active_niches: activeNiches.map((row) => row.name),
       pending_approval_count: Number(totals.pending_approval_count ?? 0),
