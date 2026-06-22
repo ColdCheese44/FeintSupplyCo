@@ -41,7 +41,7 @@ export function getBotIdentity(): { username: string; avatar_url?: string } {
 }
 
 /**
- * Returns the shared default webhook (the command-post fallback) when configured.
+ * Returns the shared default webhook for the #fsc-command-center fallback when configured.
  */
 export function getDefaultWebhook(): string | null {
   return process.env.DISCORD_WEBHOOK_URL?.trim() || null;

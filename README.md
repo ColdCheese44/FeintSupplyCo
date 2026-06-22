@@ -141,11 +141,11 @@ npm run igm:monitor    # status snapshot + post a Discord digest
 
 ## Discord channels & webhooks
 
-FeintSupplyCo routes each stream to its own channel webhook, falling back to `DISCORD_WEBHOOK_URL` (the "command post") whenever a channel-specific webhook is blank. Paste a channel's webhook URL into the matching `.env` slot to split that feed out; leave it blank to keep it in the command post.
+FeintSupplyCo routes each stream to its own channel webhook, falling back to `DISCORD_WEBHOOK_URL` in the **FeintSupplyCo Command Center** server's `#fsc-command-center` channel whenever a channel-specific webhook is blank. Paste a channel's webhook URL into the matching `.env` slot to split that feed out; leave it blank to keep it in the command center.
 
 | `.env` key | Suggested channel | What posts here |
 |---|---|---|
-| `DISCORD_WEBHOOK_URL` | `#command-post` | Fallback for anything below that's blank |
+| `DISCORD_WEBHOOK_URL` | `#fsc-command-center` | Fallback for anything below that's blank |
 | `DISCORD_HEARTBEAT_WEBHOOK_URL` | `#heartbeat-log` | Heartbeat guardrail/status messages |
 | `DISCORD_ANALYTICS_WEBHOOK_URL` | `#revenue-analytics` | Etsy performance digests |
 | `DISCORD_ORDERS_WEBHOOK_URL` | `#orders` | New orders + fulfillment/tracking |
