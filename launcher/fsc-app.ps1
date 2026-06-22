@@ -1,12 +1,12 @@
 <#
-  Jarvis Control Panel - native WPF desktop app for the Jarvis Etsy autopilot.
+  FeintSupplyCo Control Panel - native WPF desktop app for the Feint Supply Co autopilot.
   Launches the dashboard, the autonomous daemon, and every component, with live status.
   No external dependencies (uses WPF built into Windows). Falls back to the terminal menu if WPF is unavailable.
 #>
 
 # WPF needs a single-threaded apartment; relaunch under -STA if we are not already there.
 # (Skipped during self-test, which only builds the UI tree and never shows the window.)
-if (-not $env:JARVIS_APP_SELFTEST -and [System.Threading.Thread]::CurrentThread.GetApartmentState() -ne [System.Threading.ApartmentState]::STA) {
+if (-not $env:FSC_APP_SELFTEST -and [System.Threading.Thread]::CurrentThread.GetApartmentState() -ne [System.Threading.ApartmentState]::STA) {
   Start-Process -FilePath "powershell.exe" -ArgumentList @("-STA", "-NoProfile", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden", "-File", $PSCommandPath)
   return
 }
@@ -15,8 +15,8 @@ $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $RunnerCmd = Join-Path $ProjectRoot "scripts\run-daemon.cmd"
 $InstallerPs1 = Join-Path $ProjectRoot "scripts\install-daemon-task.ps1"
-$TuiPs1 = Join-Path $PSScriptRoot "jarvis.ps1"
-$IconPath = Join-Path $PSScriptRoot "jarvis.ico"
+$TuiPs1 = Join-Path $PSScriptRoot "fsc-menu.ps1"
+$IconPath = Join-Path $PSScriptRoot "fsc.ico"
 
 try {
   Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Xaml
@@ -58,14 +58,14 @@ function Set-Output([string]$message, [string]$kind = "info") {
 
 # Launches an npm script in its own visible PowerShell window so output stays watchable.
 function Start-NpmWindow([string]$scriptName, [string]$label) {
-  $cmd = "Set-Location -LiteralPath '$ProjectRoot'; Write-Host 'Jarvis > npm run $scriptName' -ForegroundColor Green; npm run $scriptName"
+  $cmd = "Set-Location -LiteralPath '$ProjectRoot'; Write-Host 'FeintSupplyCo > npm run $scriptName' -ForegroundColor Green; npm run $scriptName"
   Start-Process -FilePath "powershell.exe" -ArgumentList @("-NoExit", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", $cmd) -WorkingDirectory $ProjectRoot | Out-Null
   Set-Output "Launched: $label (npm run $scriptName)" "ok"
 }
 
 function Get-DaemonProcesses {
   return @(Get-CimInstance Win32_Process -Filter "Name='node.exe'" -ErrorAction SilentlyContinue |
-    Where-Object { $_.CommandLine -and $_.CommandLine -like '*jarvis-daemon*' })
+    Where-Object { $_.CommandLine -and $_.CommandLine -like '*fsc-daemon*' })
 }
 
 function Test-DashboardUp {
@@ -113,9 +113,9 @@ function Invoke-Component([string]$key) {
       "dashboard" {
         # Opens the dashboard as a chromeless app window (FeintTrade-style terminal),
         # starting the server first if needed.
-        $terminal = Join-Path $PSScriptRoot "jarvis-terminal.ps1"
+        $terminal = Join-Path $PSScriptRoot "fsc-terminal.ps1"
         Start-Process -FilePath "powershell.exe" -ArgumentList @("-NoProfile", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden", "-File", $terminal) -WorkingDirectory $ProjectRoot | Out-Null
-        Set-Output "Opening Jarvis Terminal (app window)..." "ok"
+        Set-Output "Opening FeintSupplyCo Terminal (app window)..." "ok"
       }
       "start-daemon" {
         if ((Get-DaemonProcesses).Count -gt 0) { Set-Output "Daemon is already running." "warn" }
@@ -143,7 +143,7 @@ function Invoke-Component([string]$key) {
         Set-Output "Removing daemon autostart..." "ok"
       }
       "tui"        { Start-Process -FilePath "powershell.exe" -ArgumentList @("-NoExit", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $TuiPs1) -WorkingDirectory $ProjectRoot | Out-Null; Set-Output "Opened terminal menu." "ok" }
-      "logs"       { $log = Join-Path $ProjectRoot "data\jarvis.log"; if (Test-Path $log) { Start-Process $log } else { Set-Output "No jarvis.log yet." "warn" } }
+      "logs"       { $log = Join-Path $ProjectRoot "data\feintsupply.log"; if (Test-Path $log) { Start-Process $log } else { Set-Output "No feintsupply.log yet." "warn" } }
       "data-folder"{ Start-Process (Join-Path $ProjectRoot "data") | Out-Null; Set-Output "Opened data folder." "ok" }
       "project"    { Start-Process $ProjectRoot | Out-Null; Set-Output "Opened project folder." "ok" }
       default      { Start-NpmWindow $key $key }
@@ -159,7 +159,7 @@ function Invoke-Component([string]$key) {
 # ---------------------------------------------------------------------------
 
 $window = New-Object System.Windows.Window
-$window.Title = "JARVIS - Feint Supply Co. Control Panel"
+$window.Title = "FEINT SUPPLY CO - Feint Supply Co. Control Panel"
 $window.Width = 760
 $window.Height = 660
 $window.WindowStartupLocation = "CenterScreen"
@@ -320,7 +320,7 @@ Add-Section "Setup & Diagnostics" @(
 )
 
 Add-Section "Files & Tools" @(
-  (New-ActionButton "Open jarvis.log"       "logs"        "neutral" "Open the structured log file"),
+  (New-ActionButton "Open feintsupply.log"       "logs"        "neutral" "Open the structured log file"),
   (New-ActionButton "Open Data Folder"      "data-folder" "neutral" "Open the data directory"),
   (New-ActionButton "Open Project Folder"   "project"     "neutral" "Open the project root"),
   (New-ActionButton "Terminal Menu"         "tui"         "neutral" "Open the classic text menu")
@@ -337,7 +337,7 @@ $window.Content = $root
 Update-Status
 $window.Add_ContentRendered({ Update-Status })
 
-if ($env:JARVIS_APP_SELFTEST -eq "1") {
+if ($env:FSC_APP_SELFTEST -eq "1") {
   Write-Host "SELFTEST OK: window built ($($content.Children.Count) sections), mode=$($script:ModeValue.Text), daemon=$($script:DaemonValue.Text), dashboard=$($script:DashboardValue.Text)"
   return
 }

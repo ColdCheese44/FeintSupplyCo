@@ -105,7 +105,7 @@ function parseMetadata(value: string | null | undefined): Record<string, unknown
 }
 
 /**
- * Opens the Jarvis SQLite database in read-only mode when it exists.
+ * Opens the FeintSupplyCo SQLite database in read-only mode when it exists.
  */
 function openReadonlyDatabase(): Database.Database | null {
   if (!existsSync(databasePath)) {
@@ -459,7 +459,7 @@ function loadIgm(): Record<string, unknown> {
 }
 
 /**
- * Loads structured activity from all human, Jarvis, and system actors.
+ * Loads structured activity from all human, FeintSupplyCo, and system actors.
  */
 function loadAuditLog(): Array<Record<string, unknown>> {
   return withReadonlyDatabase("audit-log", [], (db) => db.prepare(`
@@ -931,7 +931,7 @@ const opsNpmScripts: Record<string, string> = {
 };
 
 /**
- * Spawns an npm script detached so the dashboard request returns immediately; output goes to jarvis.log/Discord.
+ * Spawns an npm script detached so the dashboard request returns immediately; output goes to feintsupply.log/Discord.
  */
 function spawnNpmScript(scriptName: string): void {
   const child = spawn(isWindows ? "npm.cmd" : "npm", ["run", scriptName], {
@@ -966,7 +966,7 @@ app.post("/api/ops/:action", (request, response) => {
 
     if (action === "daemon-stop") {
       if (isWindows) {
-        const psCommand = "Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Where-Object { $_.CommandLine -like '*jarvis-daemon*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }";
+        const psCommand = "Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Where-Object { $_.CommandLine -like '*fsc-daemon*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }";
         const child = spawn("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", psCommand], {
           detached: true,
           stdio: "ignore",
@@ -1160,5 +1160,5 @@ app.listen(port, host, () => {
     url: `http://localhost:${port}`,
     databasePath,
   });
-  console.log(`Jarvis dashboard running at http://localhost:${port}`);
+  console.log(`FeintSupplyCo dashboard running at http://localhost:${port}`);
 });

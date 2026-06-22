@@ -133,7 +133,7 @@ async function publishDuePins(): Promise<number> {
       }
 
       const pin = await createPinterestPin({
-        title: payload.title ?? "Jarvis Etsy Drop",
+        title: payload.title ?? "Feint Supply Co Drop",
         description: payload.description ?? "",
         link: payload.link,
         imageUrl: payload.remoteImageUrl,

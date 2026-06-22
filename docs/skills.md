@@ -35,9 +35,9 @@
 - Builds a Discord embed summary
 - Posts the summary when `DISCORD_WEBHOOK_URL` is configured
 
-## `skills/jarvis-loop.ts`
+## `skills/fsc-loop.ts`
 
-- Runs one full Jarvis heartbeat cycle
+- Runs one full FeintSupplyCo heartbeat cycle
 - Mines trend opportunities
 - Generates designs and listing drafts
 - Publishes products through the POD lane

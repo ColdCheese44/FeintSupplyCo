@@ -1,18 +1,18 @@
 # OpenClaw Skill Wrappers
 
-These wrappers let OpenClaw call the existing Jarvis TypeScript skills without duplicating orchestration logic.
+These wrappers let OpenClaw call the existing FeintSupplyCo TypeScript skills without duplicating orchestration logic.
 
 ## Registering the skills
 
 1. Ensure OpenClaw is installed and your project `.env` is populated.
 2. Register the wrapper entry points with OpenClaw during onboarding or in your local skill configuration.
 3. Use these files as the execution targets:
-   - `openclaw/jarvis-heartbeat.skill.ts`
-   - `openclaw/jarvis-order-watch.skill.ts`
+   - `openclaw/fsc-heartbeat.skill.ts`
+   - `openclaw/fsc-order-watch.skill.ts`
 
 ## Recommended schedules
 
-- Main Jarvis heartbeat: `0 */6 * * *`
+- Main FeintSupplyCo heartbeat: `0 */6 * * *`
 - Order watch: `*/10 * * * *`
 
 ## Runtime controls
@@ -23,6 +23,6 @@ These wrappers let OpenClaw call the existing Jarvis TypeScript skills without d
 
 ## Viewing logs
 
-- Structured logs are written to `data/jarvis.log`
+- Structured logs are written to `data/feintsupply.log`
 - Standalone wrapper output is also printed to stdout
 - Use `npm run heartbeat` or `npm run orderwatch` locally before wiring the same files into OpenClaw

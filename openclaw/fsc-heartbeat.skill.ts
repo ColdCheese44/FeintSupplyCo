@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 
 import { getDatabase } from "../lib/db.js";
 import { createLogger } from "../lib/logger.js";
-import { runJarvisLoop } from "../skills/jarvis-loop.js";
+import { runHeartbeatLoop } from "../skills/fsc-loop.js";
 
 interface OpenClawHeartbeatSummary {
   listings_published: number;
@@ -13,10 +13,10 @@ interface OpenClawHeartbeatSummary {
   cost_total: number;
 }
 
-const logger = createLogger("openclaw-jarvis-heartbeat");
+const logger = createLogger("openclaw-fsc-heartbeat");
 
 /**
- * Reads the OpenClaw heartbeat toggles and aligns the underlying Jarvis loop env before execution.
+ * Reads the OpenClaw heartbeat toggles and aligns the underlying FeintSupplyCo loop env before execution.
  */
 function prepareHeartbeatEnvironment(): { originalDiscordWebhook?: string } {
   process.env.PUBLISH_INTERVAL_HOURS = process.env.HEARTBEAT_INTERVAL_HOURS?.trim() || process.env.PUBLISH_INTERVAL_HOURS || "6";
@@ -43,24 +43,24 @@ function estimateRecentCost(designIds: number[]): number {
 }
 
 /**
- * Runs the Jarvis heartbeat as an OpenClaw-friendly skill and returns a compact structured summary.
+ * Runs the FeintSupplyCo heartbeat as an OpenClaw-friendly skill and returns a compact structured summary.
  */
-export async function runJarvisHeartbeatSkill(): Promise<OpenClawHeartbeatSummary> {
+export async function runHeartbeatSkill(): Promise<OpenClawHeartbeatSummary> {
   const environmentSnapshot = prepareHeartbeatEnvironment();
-  logger.action("Starting OpenClaw Jarvis heartbeat wrapper", "start", {
+  logger.action("Starting OpenClaw FeintSupplyCo heartbeat wrapper", "start", {
     intervalHours: process.env.PUBLISH_INTERVAL_HOURS,
     discordReport: process.env.HEARTBEAT_DISCORD_REPORT ?? "true",
   });
 
   try {
-    const summary = await runJarvisLoop();
+    const summary = await runHeartbeatLoop();
     const result: OpenClawHeartbeatSummary = {
       listings_published: summary.productsPublished.length,
       designs_generated: summary.designsGenerated.length,
       errors: summary.failures,
       cost_total: estimateRecentCost(summary.designsGenerated),
     };
-    logger.action("Completed OpenClaw Jarvis heartbeat wrapper", "success", result);
+    logger.action("Completed OpenClaw FeintSupplyCo heartbeat wrapper", "success", result);
     return result;
   } finally {
     if (environmentSnapshot.originalDiscordWebhook !== undefined) {
@@ -81,7 +81,7 @@ function isDirectExecution(): boolean {
  */
 async function main(): Promise<void> {
   try {
-    const summary = await runJarvisHeartbeatSkill();
+    const summary = await runHeartbeatSkill();
     console.log(JSON.stringify(summary, null, 2));
   } catch (error) {
     logger.error("Standalone OpenClaw heartbeat execution failed", error);

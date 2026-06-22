@@ -117,7 +117,7 @@ function renderReadinessSection(evaluations: CredentialEvaluation[]): string {
   return [
     "SECTION 4 — READINESS SCORE",
     "",
-    `Jarvis is ${readinessPercentage}% ready to run live. ${validRequiredEntries.length} of ${requiredEntries.length} required keys are valid.`,
+    `FeintSupplyCo is ${readinessPercentage}% ready to run live. ${validRequiredEntries.length} of ${requiredEntries.length} required keys are valid.`,
   ].join("\n");
 }
 

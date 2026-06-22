@@ -50,8 +50,8 @@ export async function runWatchdog(): Promise<WatchdogSummary> {
   if (!lastHeartbeatAt) {
     setAutomationControl("system_stale", "true", "No successful heartbeat timestamp has been recorded yet.");
     const alertsSent = await postWatchdogAlert(
-      "Jarvis heartbeat missing",
-      "No successful Jarvis heartbeat timestamp has been recorded yet.",
+      "FeintSupplyCo heartbeat missing",
+      "No successful FeintSupplyCo heartbeat timestamp has been recorded yet.",
       0xff0000,
     ) ? 1 : 0;
     const summary: WatchdogSummary = {
@@ -72,8 +72,8 @@ export async function runWatchdog(): Promise<WatchdogSummary> {
     status = "critical";
     setAutomationControl("system_stale", "true", `Last heartbeat is ${ageHours.toFixed(1)} hours old.`);
     if (await postWatchdogAlert(
-      "Jarvis heartbeat critical",
-      `Jarvis heartbeat missed - last run ${lastHeartbeatAt}. System is stale after ${ageHours.toFixed(1)} hours.`,
+      "FeintSupplyCo heartbeat critical",
+      `FeintSupplyCo heartbeat missed - last run ${lastHeartbeatAt}. System is stale after ${ageHours.toFixed(1)} hours.`,
       0xff0000,
     )) {
       alertsSent += 1;
@@ -82,8 +82,8 @@ export async function runWatchdog(): Promise<WatchdogSummary> {
     status = "warning";
     setAutomationControl("system_stale", "false", `Heartbeat warning threshold exceeded at ${ageHours.toFixed(1)} hours.`);
     if (await postWatchdogAlert(
-      "Jarvis heartbeat missed",
-      `Jarvis heartbeat missed - last run ${lastHeartbeatAt}.`,
+      "FeintSupplyCo heartbeat missed",
+      `FeintSupplyCo heartbeat missed - last run ${lastHeartbeatAt}.`,
       0xffb000,
     )) {
       alertsSent += 1;

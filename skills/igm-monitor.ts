@@ -86,10 +86,10 @@ export function buildIgmPayload(status: IgmStatus): DiscordEmbedPayload {
     : `${status.currency} ${status.reportedEarningsUsd.toFixed(2)} (reported)`;
 
   return {
-    username: "Jarvis",
+    username: "FeintSupplyCo",
     embeds: [
       {
-        title: "Jarvis Passive Income — IGM Snapshot",
+        title: "FeintSupplyCo Passive Income — IGM Snapshot",
         description: "Income Generator (bandwidth-sharing) status and reported earnings.",
         color: statusColor(status.status),
         timestamp: new Date().toISOString(),
@@ -182,7 +182,7 @@ export async function runIgmMonitor(options: IgmMonitorOptions = {}): Promise<Ig
  */
 function printSummary(result: IgmMonitorResult): void {
   const { status, controlMessage } = result;
-  console.log("Jarvis IGM (passive bandwidth income)");
+  console.log("FeintSupplyCo IGM (passive bandwidth income)");
   console.log("=====================================");
   if (controlMessage) {
     console.log(`Action: ${controlMessage}`);

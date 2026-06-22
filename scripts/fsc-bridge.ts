@@ -123,12 +123,12 @@ function redact(value: string): string {
 }
 
 function getCleanupRoot(): string {
-  return process.env.JARVIS_CONTROL_CLEANUP_ROOT?.trim()
+  return process.env.FSC_CONTROL_CLEANUP_ROOT?.trim()
     || join(homedir(), "OneDrive", "Documents", "Cleanup");
 }
 
 function resolveReportRoot(): string {
-  const explicit = process.env.JARVIS_CONTROL_REPORT_DIR?.trim();
+  const explicit = process.env.FSC_CONTROL_REPORT_DIR?.trim();
   if (explicit) {
     mkdirSync(explicit, { recursive: true });
     return explicit;
@@ -160,7 +160,7 @@ function resolveReportRoot(): string {
 async function writeReport(command: BridgeCommand | "refused", content: string): Promise<string> {
   const reportRoot = resolveReportRoot();
   await mkdir(reportRoot, { recursive: true });
-  const reportPath = join(reportRoot, `jarvis-${command}-${formatTimestamp()}.md`);
+  const reportPath = join(reportRoot, `feintsupply-${command}-${formatTimestamp()}.md`);
   await writeFile(reportPath, `${content.trimEnd()}\n`, "utf8");
   return reportPath;
 }
@@ -455,13 +455,13 @@ function parseTaskOutput(name: string, run: CommandRun): TaskStatus {
 
 async function getScheduledTaskStatuses(): Promise<TaskStatus[]> {
   const candidates = [
-    "JARVIS Heartbeat",
-    "Jarvis Heartbeat",
-    "jarvis-heartbeat",
-    "JARVIS Order Watch",
-    "Jarvis Order Watch",
-    "jarvis-orderwatch",
-    "Jarvis OrderWatch",
+    "FEINT SUPPLY CO Heartbeat",
+    "FeintSupplyCo Heartbeat",
+    "fsc-heartbeat",
+    "FEINT SUPPLY CO Order Watch",
+    "FeintSupplyCo Order Watch",
+    "feintsupply-orderwatch",
+    "FeintSupplyCo OrderWatch",
   ];
   const schtasks = process.platform === "win32" ? "schtasks.exe" : "schtasks";
   const results: TaskStatus[] = [];
@@ -480,12 +480,12 @@ async function getScheduledTaskStatuses(): Promise<TaskStatus[]> {
   }
   return [
     {
-      name: "JARVIS heartbeat/order-watch",
+      name: "FEINT SUPPLY CO heartbeat/order-watch",
       found: false,
       status: "not found",
       lastRunTime: null,
       lastResult: null,
-      note: "No known JARVIS heartbeat/order-watch scheduled task names were found.",
+      note: "No known FEINT SUPPLY CO heartbeat/order-watch scheduled task names were found.",
     },
   ];
 }
@@ -635,14 +635,14 @@ async function collectStatusInputs(): Promise<{
   const safety = getSafetyPosture();
   const [openClaw, dashboard] = await Promise.all([
     fetchLocalhost("OpenClaw Control UI", "http://127.0.0.1:18789/"),
-    fetchLocalhost("JARVIS Dashboard", "http://localhost:4200/"),
+    fetchLocalhost("FEINT SUPPLY CO Dashboard", "http://localhost:4200/"),
   ]);
   const db = readDbSnapshot();
   return { safety, localhost: [openClaw, dashboard], db };
 }
 
 function commandSummary(status: "PASS" | "WARN" | "FAIL", lines: string[], reportPath: string, nextCommand: string): void {
-  const summary = [`JARVIS bridge: ${status}`, ...lines].join("\n");
+  const summary = [`FEINT SUPPLY CO bridge: ${status}`, ...lines].join("\n");
   console.log(truncate(summary, DISCORD_SUMMARY_LIMIT));
   console.log(`Report: ${reportPath}`);
   console.log(`Next safe command: ${nextCommand}`);
@@ -652,7 +652,7 @@ async function runStatus(): Promise<boolean> {
   const { safety, localhost, db } = await collectStatusInputs();
   const ready = safety.ready && db.ok && localhost.every((check) => check.ok);
   const report = [
-    "# JARVIS Localhost Status",
+    "# FEINT SUPPLY CO Localhost Status",
     "",
     `Generated: ${new Date().toISOString()}`,
     "",
@@ -667,10 +667,10 @@ async function runStatus(): Promise<boolean> {
     `ready=${ready}`,
     `approval=${safety.requireApproval ? "true" : "NOT CONFIRMED"}`,
     `maxListingsPerDay=${safety.maxListingsPerDay ?? "missing"}`,
-    `dashboard=${localhost.find((check) => check.name === "JARVIS Dashboard")?.note ?? "unknown"}`,
+    `dashboard=${localhost.find((check) => check.name === "FEINT SUPPLY CO Dashboard")?.note ?? "unknown"}`,
     `db=${db.ok ? "ok" : "not ok"}`,
     `failedOps=${db.failedOperations.available ? db.failedOperations.unresolved : "unavailable"}`,
-  ], reportPath, "npm run jarvis:health");
+  ], reportPath, "npm run fsc:health");
   return safety.ready;
 }
 
@@ -678,7 +678,7 @@ async function runHealth(): Promise<boolean> {
   const { safety, localhost, db } = await collectStatusInputs();
   const tasks = await getScheduledTaskStatuses();
   const report = [
-    "# JARVIS Localhost Health",
+    "# FEINT SUPPLY CO Localhost Health",
     "",
     `Generated: ${new Date().toISOString()}`,
     "",
@@ -698,7 +698,7 @@ async function runHealth(): Promise<boolean> {
     `providerHealth=${db.providerHealth.available ? db.providerHealth.latest.length : "unavailable"}`,
     `scheduledTasks=${tasks.filter((task) => task.found).length} found`,
     `report saved`,
-  ], reportPath, "npm run jarvis:queue");
+  ], reportPath, "npm run fsc:queue");
   return safety.ready;
 }
 
@@ -706,7 +706,7 @@ async function runQueue(command: "queue" | "approval-summary"): Promise<boolean>
   const safety = getSafetyPosture();
   const db = readDbSnapshot();
   const report = [
-    command === "queue" ? "# JARVIS Approval Queue" : "# JARVIS Approval Summary",
+    command === "queue" ? "# FEINT SUPPLY CO Approval Queue" : "# FEINT SUPPLY CO Approval Summary",
     "",
     `Generated: ${new Date().toISOString()}`,
     "",
@@ -721,7 +721,7 @@ async function runQueue(command: "queue" | "approval-summary"): Promise<boolean>
     `pendingApprovals=${db.counts.pending_approval ?? 0}`,
     "no approvals performed",
     "no listing state changed",
-  ], reportPath, command === "queue" ? "npm run jarvis:approval-summary" : "npm run jarvis:audit");
+  ], reportPath, command === "queue" ? "npm run fsc:approval-summary" : "npm run fsc:audit");
   return safety.ready;
 }
 
@@ -756,7 +756,7 @@ async function runVerificationSuite(includeLocalChecks: boolean): Promise<{
 
   const [openClaw, dashboard] = await Promise.all([
     fetchLocalhost("OpenClaw Control UI", "http://127.0.0.1:18789/"),
-    fetchLocalhost("JARVIS Dashboard", "http://localhost:4200/"),
+    fetchLocalhost("FEINT SUPPLY CO Dashboard", "http://localhost:4200/"),
   ]);
   const db = readDbSnapshot();
   const tasks = await getScheduledTaskStatuses();
@@ -773,7 +773,7 @@ async function runVerificationSuite(includeLocalChecks: boolean): Promise<{
 async function runVerify(): Promise<boolean> {
   const result = await runVerificationSuite(false);
   const report = [
-    "# JARVIS Localhost Verify",
+    "# FEINT SUPPLY CO Localhost Verify",
     "",
     `Generated: ${new Date().toISOString()}`,
     "",
@@ -790,14 +790,14 @@ async function runVerify(): Promise<boolean> {
     `build=${result.runs[0]?.ok ? "pass" : "fail"}`,
     `typecheck=${result.runs[1]?.ok ? "pass" : "fail"}`,
     `catalogVerify=${result.runs[2]?.ok ? "pass" : "fail"}`,
-  ], reportPath, "npm run jarvis:audit");
+  ], reportPath, "npm run fsc:audit");
   return result.ok;
 }
 
 async function runDoctor(): Promise<boolean> {
   const result = await runVerificationSuite(true);
   const report = [
-    "# JARVIS Localhost Doctor",
+    "# FEINT SUPPLY CO Localhost Doctor",
     "",
     `Generated: ${new Date().toISOString()}`,
     "",
@@ -821,7 +821,7 @@ async function runDoctor(): Promise<boolean> {
     `typecheck=${result.runs[1]?.ok ? "pass" : "fail"}`,
     `catalogVerify=${result.runs[2]?.ok ? "pass" : "fail"}`,
     `db=${result.db?.ok ? "ok" : "not ok"}`,
-  ], reportPath, "npm run jarvis:status");
+  ], reportPath, "npm run fsc:status");
   return result.ok;
 }
 
@@ -833,7 +833,7 @@ async function runAudit(): Promise<boolean> {
     .map(([name, command]) => ({ name, command }));
   const tasks = await getScheduledTaskStatuses();
   const report = [
-    "# JARVIS Localhost Audit",
+    "# FEINT SUPPLY CO Localhost Audit",
     "",
     `Generated: ${new Date().toISOString()}`,
     "",
@@ -860,13 +860,13 @@ async function runAudit(): Promise<boolean> {
     `MAX_LISTINGS_PER_DAY=${safety.maxListingsPerDay ?? "missing"}`,
     `dangerousScriptsPresent=${dangerousScripts.length}`,
     "dangerous scripts not executed",
-  ], reportPath, "npm run jarvis:status");
+  ], reportPath, "npm run fsc:status");
   return safety.ready;
 }
 
 async function refuseCommand(rawCommand: string): Promise<void> {
   const report = [
-    "# JARVIS Bridge Refusal",
+    "# FEINT SUPPLY CO Bridge Refusal",
     "",
     `Generated: ${new Date().toISOString()}`,
     "",
@@ -880,7 +880,7 @@ async function refuseCommand(rawCommand: string): Promise<void> {
   commandSummary("FAIL", [
     `refused=${rawCommand || "<missing>"}`,
     `supported=${SUPPORTED_COMMANDS.join(", ")}`,
-  ], reportPath, "npm run jarvis:status");
+  ], reportPath, "npm run fsc:status");
 }
 
 async function dispatch(command: BridgeCommand): Promise<boolean> {

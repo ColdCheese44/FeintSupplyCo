@@ -1,6 +1,6 @@
 # Feint Supply Co. Automation
 
-Jarvis is an autonomous commerce stack built around TypeScript skills for OpenClaw and Python support utilities. It researches Etsy opportunities, mines nostalgia trends, routes work across multiple AI providers, generates product art and mockups, publishes POD-backed products through Printify and Etsy, monitors orders, and posts performance summaries to Discord.
+FeintSupplyCo is an autonomous commerce stack built around TypeScript skills for OpenClaw and Python support utilities. It researches Etsy opportunities, mines nostalgia trends, routes work across multiple AI providers, generates product art and mockups, publishes POD-backed products through Printify and Etsy, monitors orders, and posts performance summaries to Discord.
 
 ## What is included
 
@@ -61,7 +61,7 @@ node skills/order-orchestrator.ts
 node skills/marketing-engine.ts
 node skills/trademark-hunter.ts
 node skills/etsy-analytics.ts
-node skills/jarvis-loop.ts
+node skills/fsc-loop.ts
 ```
 
 Or use the npm shortcuts:
@@ -118,12 +118,12 @@ Cadences (from `.env`, with sensible defaults):
 
 Notes:
 - The daemon respects `DRY_RUN` and `REQUIRE_APPROVAL` from `.env` — installing it never changes operating mode.
-- `JARVIS_DAEMON_MAX_RUNTIME_MS` bounds the run (used for tests/supervised restarts); 0 = run forever.
-- The Scheduled Task runs `npm run daemon` hidden at logon and restarts it every 2 minutes if it stops. Console output goes to `data/daemon.out.log`; structured logs to `data/jarvis.log`.
+- `FEINT SUPPLY CO_DAEMON_MAX_RUNTIME_MS` bounds the run (used for tests/supervised restarts); 0 = run forever.
+- The Scheduled Task runs `npm run daemon` hidden at logon and restarts it every 2 minutes if it stops. Console output goes to `data/daemon.out.log`; structured logs to `data/feintsupply.log`.
 
 ## Passive income (Income Generator / IGM)
 
-Jarvis can also monitor an [Income Generator](https://github.com/XternA/income-generator) bandwidth-sharing stack and report its earnings alongside Etsy income. It degrades gracefully: if Docker or IGM is not installed, status simply reports `not_installed`.
+FeintSupplyCo can also monitor an [Income Generator](https://github.com/XternA/income-generator) bandwidth-sharing stack and report its earnings alongside Etsy income. It degrades gracefully: if Docker or IGM is not installed, status simply reports `not_installed`.
 
 ```powershell
 npm run igm:status     # show current status + reported earnings
@@ -141,7 +141,7 @@ npm run igm:monitor    # status snapshot + post a Discord digest
 
 ## Discord channels & webhooks
 
-Jarvis routes each stream to its own channel webhook, falling back to `DISCORD_WEBHOOK_URL` (the "command post") whenever a channel-specific webhook is blank. Paste a channel's webhook URL into the matching `.env` slot to split that feed out; leave it blank to keep it in the command post.
+FeintSupplyCo routes each stream to its own channel webhook, falling back to `DISCORD_WEBHOOK_URL` (the "command post") whenever a channel-specific webhook is blank. Paste a channel's webhook URL into the matching `.env` slot to split that feed out; leave it blank to keep it in the command post.
 
 | `.env` key | Suggested channel | What posts here |
 |---|---|---|
@@ -167,12 +167,12 @@ Both fail safe — if the API is unreachable, the pipeline proceeds without the 
 
 ## Notes
 
-- Jarvis logs structured JSON lines to `data/jarvis.log`.
+- FeintSupplyCo logs structured JSON lines to `data/feintsupply.log`.
 - The Phase 2 heartbeat flow is `trend-miner -> design-generator -> listing-gen -> pod-publisher -> marketing-engine -> etsy-analytics`.
 - Direct Etsy publishing still exists for legacy flows, but the preferred physical-product path is Printify-backed POD publishing.
 - Etsy OAuth uses the local callback `http://localhost:3000/oauth/callback`, which must be registered in your Etsy app before `npm run etsy:oauth`.
 - Printify store linking must be completed in the Printify dashboard before `PRINTIFY_SHOP_ID` can be discovered or written.
-- Some Etsy shops require additional publish defaults such as `ETSY_DEFAULT_TAXONOMY_ID`, `ETSY_SHIPPING_PROFILE_ID`, and `ETSY_READINESS_STATE_ID`, and Jarvis now includes a helper to fetch them interactively after OAuth.
+- Some Etsy shops require additional publish defaults such as `ETSY_DEFAULT_TAXONOMY_ID`, `ETSY_SHIPPING_PROFILE_ID`, and `ETSY_READINESS_STATE_ID`, and FeintSupplyCo now includes a helper to fetch them interactively after OAuth.
 - `data/jarvis.db` is created automatically when the database layer initializes.
 
 ## Go-live after Etsy approval

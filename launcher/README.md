@@ -1,6 +1,6 @@
-# Jarvis Launcher
+# FeintSupplyCo Launcher
 
-A native **Windows desktop control panel** (WPF) for the Jarvis Etsy autopilot. It launches the
+A native **Windows desktop control panel** (WPF) for the Feint Supply Co autopilot. It launches the
 dashboard, the autonomous daemon, and every component, and shows live status — no terminal required.
 
 ## Install the desktop app
@@ -12,8 +12,8 @@ npm run install-launcher
 ```
 
 That creates two Desktop + Start Menu shortcuts:
-- **Jarvis** — the control panel ([`jarvis-app.ps1`](jarvis-app.ps1)): buttons + live status.
-- **Jarvis Terminal** — opens the dashboard straight into a **chromeless app window** (FeintTrade-style), starting the server if needed ([`jarvis-terminal.ps1`](jarvis-terminal.ps1)).
+- **FeintSupplyCo** — the control panel ([`fsc-app.ps1`](fsc-app.ps1)): buttons + live status.
+- **FeintSupplyCo Terminal** — opens the dashboard straight into a **chromeless app window** (FeintTrade-style), starting the server if needed ([`fsc-terminal.ps1`](fsc-terminal.ps1)).
 
 To launch without shortcuts:
 
@@ -32,7 +32,7 @@ components and controls the daemon — modeled on the FeintTrade trading termina
 - **Dashboard & Autonomy** — Open Dashboard, Start/Stop Daemon, Install/Remove Autostart.
 - **Run a cycle** — Heartbeat, Order Watch, Trend Miner, Analytics, Marketing, Trademark Hunter, Cost Dashboard, IGM Status.
 - **Setup & Diagnostics** — Credential Audit, Smoke Test, Preview Discord Digest, Diagnose Pinterest, Go-Live Wizard.
-- **Files & Tools** — open `jarvis.log`, the data folder, the project folder, or the classic terminal menu.
+- **Files & Tools** — open `feintsupply.log`, the data folder, the project folder, or the classic terminal menu.
 
 Each "run" button opens its own console window so you can watch the output. Start/Stop Daemon and the
 dashboard update the status bar automatically.
@@ -40,12 +40,12 @@ dashboard update the status bar automatically.
 ## Uninstall
 
 Delete the shortcut files:
-- `%USERPROFILE%\Desktop\Jarvis.lnk`
-- `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Jarvis.lnk`
+- `%USERPROFILE%\Desktop\FeintSupplyCo.lnk`
+- `%APPDATA%\Microsoft\Windows\Start Menu\Programs\FeintSupplyCo.lnk`
 
 ## Notes
 
 - The app uses WPF built into Windows — no extra dependencies. If WPF can't load, it falls back to the
-  text menu ([`jarvis.ps1`](jarvis.ps1)), which is still available via the **Terminal Menu** button.
+  text menu ([`fsc-menu.ps1`](fsc-menu.ps1)), which is still available via the **Terminal Menu** button.
 - The shortcut runs PowerShell hidden (`-STA -WindowStyle Hidden`) so only the app window shows.
-- If `jarvis.ico` is missing, [`generate-icon.ps1`](generate-icon.ps1) recreates it during install.
+- If `fsc.ico` is missing, [`generate-icon.ps1`](generate-icon.ps1) recreates it during install.

@@ -62,7 +62,7 @@ function Get-ReadinessStatus {
   }
 
   $joined = ($output | Out-String)
-  $match = [regex]::Match($joined, "Jarvis is (\d+)% ready to run live\. (\d+) of (\d+) required keys are valid\.")
+  $match = [regex]::Match($joined, "FeintSupplyCo is (\d+)% ready to run live\. (\d+) of (\d+) required keys are valid\.")
   if (-not $match.Success) {
     return @{
       Percent = "?"
@@ -106,7 +106,7 @@ function Show-Banner {
     [hashtable]$Readiness
   )
 
-  $host.UI.RawUI.WindowTitle = "JARVIS $([char]0x2014) Etsy Commerce Autopilot"
+  $host.UI.RawUI.WindowTitle = "FEINT SUPPLY CO $([char]0x2014) Etsy Commerce Autopilot"
   $host.UI.RawUI.BackgroundColor = "Black"
   $host.UI.RawUI.ForegroundColor = "Green"
   Clear-Host
@@ -190,7 +190,7 @@ function Open-Dashboard {
 
 function Show-LatestLogs {
   Write-LauncherLog "View latest logs"
-  $jarvisLog = Join-Path (Get-ProjectRoot) "data\jarvis.log"
+  $jarvisLog = Join-Path (Get-ProjectRoot) "data\feintsupply.log"
   $launcherLog = Get-LauncherLogPath
 
   Write-Host ""
@@ -202,11 +202,11 @@ function Show-LatestLogs {
   }
 
   Write-Host ""
-  Write-Host "Jarvis log" -ForegroundColor Cyan
+  Write-Host "FeintSupplyCo log" -ForegroundColor Cyan
   if (Test-Path -LiteralPath $jarvisLog) {
     Get-Content -LiteralPath $jarvisLog -Tail 40
   } else {
-    Write-Host "No jarvis.log file yet." -ForegroundColor Yellow
+    Write-Host "No feintsupply.log file yet." -ForegroundColor Yellow
   }
 }
 

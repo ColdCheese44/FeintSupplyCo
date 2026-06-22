@@ -429,7 +429,7 @@ async function loadLegalSources(): Promise<{
 }
 
 /**
- * Evaluates one design or listing payload against Jarvis legal policy and returns a blocking or manual-review decision.
+ * Evaluates one design or listing payload against FeintSupplyCo legal policy and returns a blocking or manual-review decision.
  */
 export async function evaluateLegalFilter(input: LegalFilterInput, mode: LegalFilterMode = "theme"): Promise<LegalFilterResult> {
   const subject = buildSubject(input);
@@ -589,7 +589,7 @@ export async function assertLegalApproval(
 
   const result = await evaluateLegalFilter(normalizedInput, mode);
   if (!result.approved) {
-    logger.warn("Legal filter blocked Jarvis content", {
+    logger.warn("Legal filter blocked FeintSupplyCo content", {
       source: normalizedInput.source,
       decision: result.decision,
       reasons: result.reasons,

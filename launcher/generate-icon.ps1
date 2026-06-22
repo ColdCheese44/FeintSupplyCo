@@ -82,8 +82,8 @@ function Write-IcoFile {
 }
 
 $launcherDirectory = $PSScriptRoot
-$iconPath = Join-Path $launcherDirectory "jarvis.ico"
-$pngPath = Join-Path $launcherDirectory "jarvis.png"
+$iconPath = Join-Path $launcherDirectory "fsc.ico"
+$pngPath = Join-Path $launcherDirectory "fsc.png"
 $sizes = @(16, 32, 48, 64, 128, 256)
 $images = @()
 

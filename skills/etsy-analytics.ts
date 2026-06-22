@@ -120,10 +120,10 @@ export function buildEtsyAnalyticsPayload(
   const previewLabel = options.previewLabel?.trim() || "PREVIEW - Not Live Data";
 
   return {
-    username: "Jarvis",
+    username: "FeintSupplyCo",
     embeds: [
       {
-        title: options.preview ? `Jarvis Etsy Performance Snapshot (${previewLabel})` : "Jarvis Etsy Performance Snapshot",
+        title: options.preview ? `Feint Supply Co Performance Snapshot (${previewLabel})` : "Feint Supply Co Performance Snapshot",
         description: options.preview
           ? "Synthetic preview of the daily Etsy analytics digest."
           : "Automated performance report for your published Etsy listings.",
@@ -161,10 +161,10 @@ export function buildEtsyAnalyticsPayload(
  */
 function buildDryRunAnalyticsPayload(): DiscordEmbedPayload {
   return {
-    username: "Jarvis",
+    username: "FeintSupplyCo",
     embeds: [
       {
-        title: "Jarvis Etsy Performance Snapshot",
+        title: "Feint Supply Co Performance Snapshot",
         description: "Dry-run analytics payload generated without Etsy or Discord writes.",
         color: 0x808080,
         timestamp: new Date().toISOString(),

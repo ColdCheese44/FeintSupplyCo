@@ -72,7 +72,7 @@ function entry(
 }
 
 /**
- * Shared manifest of all credentials and config values Jarvis expects across providers and local runtime config.
+ * Shared manifest of all credentials and config values FeintSupplyCo expects across providers and local runtime config.
  */
 export const credentialManifest: CredentialManifestEntry[] = [
   entry(
@@ -441,7 +441,7 @@ export const credentialManifest: CredentialManifestEntry[] = [
     true,
     "number",
     "https://github.com/motdotla/dotenv#readme",
-    ["jarvis-loop publish caps"],
+    ["fsc-loop publish caps"],
     (value) => Number.isFinite(Number(value)),
   ),
   entry(

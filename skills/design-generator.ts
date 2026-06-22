@@ -332,7 +332,7 @@ export async function generateDesignBundle(input: DesignGenerationInput): Promis
     },
   });
 
-  auditLog("design_generated", "jarvis", {
+  auditLog("design_generated", "feintsupply", {
     theme: input.theme,
     productType: input.productType,
     qualityScore: quality.score,

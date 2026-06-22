@@ -4,13 +4,13 @@ import { pathToFileURL } from "node:url";
 
 import { initializeDatabase } from "../lib/db.js";
 import { createLogger } from "../lib/logger.js";
-import { runJarvisHeartbeatSkill } from "../openclaw/jarvis-heartbeat.skill.js";
+import { runHeartbeatSkill } from "../openclaw/fsc-heartbeat.skill.js";
 import { runOrderOrchestrator } from "../skills/order-orchestrator.js";
 import { runWatchdog } from "../skills/watchdog.js";
 import { runIgmMonitor } from "../skills/igm-monitor.js";
 import { isDryRunEnabled } from "../lib/runtime.js";
 
-const logger = createLogger("jarvis-daemon");
+const logger = createLogger("fsc-daemon");
 
 interface ScheduledTask {
   name: string;
@@ -86,7 +86,7 @@ function buildSchedule(): ScheduledTask[] {
       name: "heartbeat",
       intervalMs: heartbeatHours * HOUR_MS,
       runImmediately: true,
-      handler: async () => runJarvisHeartbeatSkill(),
+      handler: async () => runHeartbeatSkill(),
       isRunning: false,
       runs: 0,
       failures: 0,
@@ -153,14 +153,14 @@ function formatInterval(intervalMs: number): string {
 export async function startDaemon(): Promise<void> {
   initializeDatabase();
   const tasks = buildSchedule();
-  const maxRuntimeMs = readPositiveNumber(process.env.JARVIS_DAEMON_MAX_RUNTIME_MS, 0);
+  const maxRuntimeMs = readPositiveNumber(process.env.FSC_DAEMON_MAX_RUNTIME_MS, 0);
 
-  logger.action("Jarvis daemon starting", "start", {
+  logger.action("FeintSupplyCo daemon starting", "start", {
     dryRun: isDryRunEnabled(),
     tasks: tasks.map((task) => ({ name: task.name, every: formatInterval(task.intervalMs), runImmediately: task.runImmediately })),
     maxRuntimeMs: maxRuntimeMs || "unlimited",
   });
-  console.log("Jarvis autonomous daemon online.");
+  console.log("FeintSupplyCo autonomous daemon online.");
   for (const task of tasks) {
     console.log(`  • ${task.name} every ${formatInterval(task.intervalMs)}${task.runImmediately ? " (runs now, then on interval)" : ""}`);
   }
@@ -181,11 +181,11 @@ export async function startDaemon(): Promise<void> {
         clearInterval(task.timer);
       }
     }
-    logger.action("Jarvis daemon shutting down", "info", {
+    logger.action("FeintSupplyCo daemon shutting down", "info", {
       reason,
       summary: tasks.map((task) => ({ name: task.name, runs: task.runs, failures: task.failures, lastRunAt: task.lastRunAt })),
     });
-    console.log(`Jarvis daemon stopped (${reason}).`);
+    console.log(`FeintSupplyCo daemon stopped (${reason}).`);
   };
 
   process.on("SIGINT", () => {
@@ -234,7 +234,7 @@ async function main(): Promise<void> {
   try {
     await startDaemon();
   } catch (error) {
-    logger.error("Jarvis daemon failed to start", error);
+    logger.error("FeintSupplyCo daemon failed to start", error);
     process.exitCode = 1;
   }
 }

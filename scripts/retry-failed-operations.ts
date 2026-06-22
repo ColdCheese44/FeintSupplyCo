@@ -31,7 +31,7 @@ async function postDiscordAlert(message: string): Promise<void> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      username: process.env.DISCORD_BOT_NAME?.trim() || "Jarvis",
+      username: process.env.DISCORD_BOT_NAME?.trim() || "FeintSupplyCo",
       content: message,
     }),
   });

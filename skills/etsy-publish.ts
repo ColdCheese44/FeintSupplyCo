@@ -169,7 +169,7 @@ export async function publishListing(listingId: number, options: PublishListingO
       etsy_listing_id: publishResult.etsyListingId,
       listing_url: publishResult.listingUrl,
     };
-    auditLog("publish", "jarvis", {
+    auditLog("publish", "feintsupply", {
       etsyListingId: publishResult.etsyListingId,
       listingUrl: publishResult.listingUrl,
     }, listingId, listing.design_id ?? undefined);

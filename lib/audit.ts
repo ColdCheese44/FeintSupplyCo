@@ -14,7 +14,7 @@ export type AuditAction =
   | "provider_down"
   | "run_operation";
 
-export type AuditActor = "human" | "jarvis" | "system";
+export type AuditActor = "human" | "feintsupply" | "system";
 const logger = createLogger("audit");
 
 /**

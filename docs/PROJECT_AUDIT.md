@@ -20,8 +20,8 @@ The current implementation supports stickers, t-shirts, mugs, posters, hoodies, 
 
 ### Control plane
 
-- `scripts/jarvis-daemon.ts` supervises the heartbeat, order watcher, watchdog, and optional IGM monitor on independent schedules.
-- `skills/jarvis-loop.ts` runs the main commerce heartbeat.
+- `scripts/fsc-daemon.ts` supervises the heartbeat, order watcher, watchdog, and optional IGM monitor on independent schedules.
+- `skills/fsc-loop.ts` runs the main commerce heartbeat.
 - `monitor/dashboard-server.ts` exposes the local operator API on loopback by default.
 - `monitor/dashboard.html` is the responsive Quartermaster dashboard.
 - `launcher/` provides Windows desktop and terminal launchers.

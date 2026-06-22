@@ -43,7 +43,7 @@ export const ENAMEL_PIN_FULFILLMENT_NOTE =
   "Made to order. This listing uses a digital mockup preview, and the physical enamel pin is fulfilled manually after purchase.";
 
 /**
- * Normalizes user, seed, and DB product-type strings into the canonical product labels used across Jarvis.
+ * Normalizes user, seed, and DB product-type strings into the canonical product labels used across FeintSupplyCo.
  */
 export function normalizeProductType(value: string | null | undefined): ProductType | null {
   const normalized = value?.trim().toLowerCase().replace(/\s+/g, "-") ?? "";
@@ -95,7 +95,7 @@ export function normalizeProductType(value: string | null | undefined): ProductT
 }
 
 /**
- * Returns whether a loose value resolves to one of Jarvis's supported product types.
+ * Returns whether a loose value resolves to one of FeintSupplyCo's supported product types.
  */
 export function isProductType(value: string | null | undefined): value is ProductType {
   return normalizeProductType(value) !== null;

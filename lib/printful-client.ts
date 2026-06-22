@@ -532,7 +532,7 @@ export async function generateMockup(
 }
 
 /**
- * Creates a backup Printful sync product so Jarvis has a second fulfillment path if Printify fails.
+ * Creates a backup Printful sync product so FeintSupplyCo has a second fulfillment path if Printify fails.
  */
 export async function createPrintfulProduct(input: PrintfulProductCreateInput): Promise<PrintfulProductResult> {
   try {

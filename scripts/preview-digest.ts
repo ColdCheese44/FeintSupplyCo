@@ -123,11 +123,11 @@ async function main(): Promise<void> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      username: process.env.DISCORD_BOT_NAME?.trim() || "Jarvis",
+      username: process.env.DISCORD_BOT_NAME?.trim() || "FeintSupplyCo",
       embeds: [
         {
           title: "PREVIEW - Not Live Data",
-          description: "This is a deliberate preview of the daily Jarvis Discord digest format.",
+          description: "This is a deliberate preview of the daily FeintSupplyCo Discord digest format.",
           color: 0xffb000,
           timestamp: new Date().toISOString(),
           fields: [

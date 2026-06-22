@@ -110,7 +110,7 @@ async function postBudgetAlertOnce(key: string, message: string): Promise<void> 
   await postDiscord("cost", {
     embeds: [
       {
-        title: "Jarvis Budget Alert",
+        title: "FeintSupplyCo Budget Alert",
         description: message,
         color: 0xffb000,
         timestamp: new Date().toISOString(),
@@ -195,7 +195,7 @@ export async function authorizeBudgetSpend(
   const categorySpent = snapshot.categorySpent[category] ?? 0;
 
   if (snapshot.availableBudgetUsd <= 0 || snapshot.totalSpentUsd >= snapshot.seedBudgetUsd + snapshot.reinvestedUsd) {
-    const reason = "Total Jarvis budget is depleted.";
+    const reason = "Total FeintSupplyCo budget is depleted.";
     recordBudgetLedgerEntry({
       category,
       amountUsd: 0,
@@ -222,7 +222,7 @@ export async function authorizeBudgetSpend(
       referenceId,
       metadata: { reason, categoryCap, categorySpent, attemptedAmountUsd: amountUsd },
     });
-    await postBudgetAlertOnce(`budget_category_exhausted_${category}`, `${category} budget has been exhausted. Jarvis will skip new ${category} spending until budget is replenished.`);
+    await postBudgetAlertOnce(`budget_category_exhausted_${category}`, `${category} budget has been exhausted. FeintSupplyCo will skip new ${category} spending until budget is replenished.`);
     return {
       approved: false,
       category,

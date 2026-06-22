@@ -63,7 +63,7 @@ function buildDryRunResearchOpportunities(maxResults: number): ResearchOpportuni
       niche: "Digital Sticker Pack",
       keyword: "y2k sticker bundle",
       score: 1.742,
-      reasoning: "Dry-run sample: sticker packs fit Jarvis low-friction test publishing patterns.",
+      reasoning: "Dry-run sample: sticker packs fit FeintSupplyCo low-friction test publishing patterns.",
       estimatedDemand: "high",
       competitionLevel: "medium",
       averagePrice: 6.99,
@@ -121,7 +121,7 @@ function classifyCompetition(listingCount: number): string {
 }
 
 /**
- * Aggregates search results into the opportunity score Jarvis uses for ranking niches.
+ * Aggregates search results into the opportunity score FeintSupplyCo uses for ranking niches.
  */
 function calculateResearchStats(listings: EtsySearchListing[]): ResearchStats {
   const listingCount = listings.length;

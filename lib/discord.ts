@@ -32,10 +32,10 @@ const channelEnvVar: Record<Exclude<DiscordChannel, "default">, string> = {
  * Returns the bot display name and optional avatar used on every webhook post.
  *
  * The webhook's name configured in Discord's UI is ignored because the payload `username` overrides it,
- * so the bot name is controlled here via DISCORD_BOT_NAME (defaults to "Jarvis").
+ * so the bot name is controlled here via DISCORD_BOT_NAME (defaults to "FeintSupplyCo").
  */
 export function getBotIdentity(): { username: string; avatar_url?: string } {
-  const username = process.env.DISCORD_BOT_NAME?.trim() || "Jarvis";
+  const username = process.env.DISCORD_BOT_NAME?.trim() || "FeintSupplyCo";
   const avatarUrl = process.env.DISCORD_BOT_AVATAR_URL?.trim();
   return avatarUrl ? { username, avatar_url: avatarUrl } : { username };
 }
@@ -65,7 +65,7 @@ export function resolveChannelWebhook(channel: DiscordChannel): string | null {
  * Posts a payload to a channel's webhook (or the shared fallback).
  *
  * Never throws: returns false when no webhook is configured or the request fails, so Discord
- * delivery problems can never break the autonomous pipeline. The "Jarvis" username is applied
+ * delivery problems can never break the autonomous pipeline. The "FeintSupplyCo" username is applied
  * by default but can be overridden by the payload.
  */
 export async function postDiscord(channel: DiscordChannel, payload: Record<string, unknown>): Promise<boolean> {

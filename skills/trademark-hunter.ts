@@ -131,7 +131,7 @@ async function createDossierPdf(markText: string, narrative: string): Promise<st
   const fontSize = 12;
   let cursorY = 760;
 
-  page.drawText(`Jarvis Trademark Review: ${markText}`, {
+  page.drawText(`FeintSupplyCo Trademark Review: ${markText}`, {
     x: 48,
     y: cursorY,
     size: 18,
@@ -300,7 +300,7 @@ export async function runTrademarkHunter(): Promise<TrademarkHunterSummary> {
         metadata: {
           status: detailedCase.status ?? null,
           goodsServices: detailedCase.goods_services ?? null,
-          note: "Human review only. Jarvis must never auto-produce or auto-file from trademark candidates.",
+          note: "Human review only. FeintSupplyCo must never auto-produce or auto-file from trademark candidates.",
         },
       });
       summary.created += 1;

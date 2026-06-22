@@ -967,7 +967,7 @@
       <div class="panel-header">
         <div>
           <h2 class="panel-title">Activity Log</h2>
-          <span class="panel-subtitle">Last 50 human, Jarvis, and system actions</span>
+          <span class="panel-subtitle">Last 50 human, FeintSupplyCo, and system actions</span>
         </div>
         <button class="audit-toggle" id="audit-toggle" type="button">Show Activity</button>
       </div>
@@ -1557,7 +1557,7 @@
               const actor = String(row.actor ?? "system").toLowerCase();
               const actorClass = actor === "human"
                 ? "status-published"
-                : actor === "jarvis"
+                : actor === "feintsupply"
                   ? "status-pending"
                   : "status-draft";
               let details = "";

@@ -439,7 +439,7 @@ function parseNicheProductTypes(value: string | null | undefined): ProductType[]
 }
 
 /**
- * Normalizes a raw niche row from SQLite into the richer runtime shape used elsewhere in Jarvis.
+ * Normalizes a raw niche row from SQLite into the richer runtime shape used elsewhere in FeintSupplyCo.
  */
 function mapNicheRow(row: {
   id: number;
@@ -750,7 +750,7 @@ function runMigrations(db: Database.Database): void {
     CREATE TABLE IF NOT EXISTS audit_log (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       action TEXT NOT NULL,
-      actor TEXT NOT NULL CHECK(actor IN ('human', 'jarvis', 'system')),
+      actor TEXT NOT NULL CHECK(actor IN ('human', 'feintsupply', 'system')),
       listing_id INTEGER REFERENCES listings(id),
       design_id INTEGER REFERENCES designs(id),
       details TEXT,
@@ -1658,7 +1658,7 @@ export function listTrademarkCandidatesAboveThreshold(threshold: number): Tradem
 }
 
 /**
- * Stores a marketing event so Jarvis can schedule or measure cross-channel traffic actions.
+ * Stores a marketing event so FeintSupplyCo can schedule or measure cross-channel traffic actions.
  */
 export function createMarketingEvent(input: MarketingEventInsertInput): MarketingEventRecord {
   const db = getDatabase();
@@ -1766,7 +1766,7 @@ export function recordLlmCall(input: LlmCallInsertInput): LlmCallRecord {
 }
 
 /**
- * Records one budget-affecting operation so Jarvis can enforce caps and audit reinvestment decisions over time.
+ * Records one budget-affecting operation so FeintSupplyCo can enforce caps and audit reinvestment decisions over time.
  */
 export function recordBudgetLedgerEntry(input: BudgetLedgerInsertInput): BudgetLedgerRecord {
   const db = getDatabase();

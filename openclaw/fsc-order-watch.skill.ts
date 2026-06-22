@@ -11,20 +11,20 @@ interface OpenClawOrderWatchSummary {
   errors: string[];
 }
 
-const logger = createLogger("openclaw-jarvis-order-watch");
+const logger = createLogger("openclaw-fsc-order-watch");
 
 /**
  * Runs the lightweight order watcher so OpenClaw can poll Etsy receipts on a tighter interval.
  */
-export async function runJarvisOrderWatchSkill(): Promise<OpenClawOrderWatchSummary> {
-  logger.action("Starting OpenClaw Jarvis order watch", "start");
+export async function runOrderWatchSkill(): Promise<OpenClawOrderWatchSummary> {
+  logger.action("Starting OpenClaw FeintSupplyCo order watch", "start");
   const summary = await runOrderOrchestrator();
   const result: OpenClawOrderWatchSummary = {
     orders_seen: summary.newOrders,
     tracking_updates: summary.trackingUpdates,
     errors: summary.failures,
   };
-  logger.action("Completed OpenClaw Jarvis order watch", "success", result);
+  logger.action("Completed OpenClaw FeintSupplyCo order watch", "success", result);
   return result;
 }
 
@@ -40,7 +40,7 @@ function isDirectExecution(): boolean {
  */
 async function main(): Promise<void> {
   try {
-    const summary = await runJarvisOrderWatchSkill();
+    const summary = await runOrderWatchSkill();
     console.log(JSON.stringify(summary, null, 2));
   } catch (error) {
     logger.error("Standalone OpenClaw order watch execution failed", error);

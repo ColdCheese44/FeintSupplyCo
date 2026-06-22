@@ -20,7 +20,7 @@ interface SerializedError {
 }
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const logFilePath = resolve(projectRoot, "data", "jarvis.log");
+const logFilePath = resolve(projectRoot, "data", "feintsupply.log");
 
 /**
  * Maps a text log level to a numeric priority so filtering stays predictable.

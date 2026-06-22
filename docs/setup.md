@@ -21,7 +21,7 @@
 7. Run `npm run smoke` for a read-only DRY_RUN validation pass.
 8. Test trend mining with `node skills/trend-miner.ts --max-results 5`.
 9. Test design generation with `node skills/design-generator.ts --theme "retro arcade" --product-type t-shirt`.
-10. When credentials are ready, run the orchestrator with `node skills/jarvis-loop.ts`.
+10. When credentials are ready, run the orchestrator with `node skills/fsc-loop.ts`.
 
 ## Etsy OAuth setup
 

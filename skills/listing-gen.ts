@@ -71,7 +71,7 @@ function buildDryRunListing(input: ListingGenerationInput): ListingRecord {
   const title = `${input.keyword} Vintage Inspired ${productLabel}`.slice(0, 140);
   const description = [
     `${input.keyword} leads this dry-run Etsy description so the SEO path stays representative without calling a model for this ${productLabel}.`,
-    "Jarvis uses this synthetic copy to confirm listing generation, routing, and validation rules are wired correctly before any live provider traffic is allowed.",
+    "FeintSupplyCo uses this synthetic copy to confirm listing generation, routing, and validation rules are wired correctly before any live provider traffic is allowed.",
     "The product summary stays comfortably above the quality threshold, includes a natural buyer-facing tone, and mirrors the structure the live Claude prompt is expected to create.",
     "Use this placeholder record only for smoke testing. It should never be published, charged, synced, or treated as real marketplace content.",
   ].join(" ");
@@ -88,7 +88,7 @@ function buildDryRunListing(input: ListingGenerationInput): ListingRecord {
     "vintage style",
     "y2k aesthetic",
     "etsy seo test",
-    "jarvis dry run",
+    "feintsupply dry run",
   ];
 
   return {
@@ -459,7 +459,7 @@ function validateGeneratedListing(title: string, description: string, tags: stri
   }
 
   if (description.length < 200 || wordCount < 250) {
-    throw new Error("Generated description is too short for the Jarvis quality threshold.");
+    throw new Error("Generated description is too short for the FeintSupplyCo quality threshold.");
   }
 
   if (tags.length < 1 || tags.length > 13) {

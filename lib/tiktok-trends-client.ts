@@ -26,7 +26,7 @@ async function throttleTikTokRequests(minimumIntervalMs = 3000): Promise<void> {
 }
 
 /**
- * Normalizes a raw TikTok term into the shorter label Jarvis uses across trend sources.
+ * Normalizes a raw TikTok term into the shorter label FeintSupplyCo uses across trend sources.
  */
 function normalizeLabel(value: string): string {
   return value
@@ -64,7 +64,7 @@ function extractTikTokTerms(html: string): string[] {
 }
 
 /**
- * Scrapes public TikTok Creative Center terms and filters them toward Jarvis seed niches.
+ * Scrapes public TikTok Creative Center terms and filters them toward FeintSupplyCo seed niches.
  */
 export async function fetchTikTokTrendSignals(seedKeywords: string[], limit = 10): Promise<TikTokThemeSignal[]> {
   await throttleTikTokRequests();

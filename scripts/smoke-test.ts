@@ -26,7 +26,7 @@ import { runEtsyResearch } from "../skills/etsy-research.js";
 import { generateDesignBundle } from "../skills/design-generator.js";
 import { publishListing as publishLegacyListing } from "../skills/etsy-publish.js";
 import { generateListingImage } from "../skills/image-gen.js";
-import { runJarvisLoop } from "../skills/jarvis-loop.js";
+import { runHeartbeatLoop } from "../skills/fsc-loop.js";
 import { generateListing } from "../skills/listing-gen.js";
 import { runMarketingEngine } from "../skills/marketing-engine.js";
 import { runOrderOrchestrator } from "../skills/order-orchestrator.js";
@@ -494,7 +494,7 @@ async function probeRecraft(): Promise<{ auth: ProviderAuthStatus; functional: F
 }
 
 /**
- * Checks Pinterest token health plus the three read scopes Jarvis depends on.
+ * Checks Pinterest token health plus the three read scopes FeintSupplyCo depends on.
  */
 async function probePinterest(): Promise<{ auth: ProviderAuthStatus; functional: FunctionalStatus; sample?: unknown; note?: string }> {
   try {
@@ -1030,10 +1030,10 @@ async function maybePostDiscordEmbed(renderedTable: string): Promise<void> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      username: process.env.DISCORD_BOT_NAME?.trim() || "Jarvis",
+      username: process.env.DISCORD_BOT_NAME?.trim() || "FeintSupplyCo",
       embeds: [
         {
-          title: "Jarvis Smoke Test",
+          title: "FeintSupplyCo Smoke Test",
           description: `\`\`\`\n${renderedTable}\n\`\`\``,
           color: 0x808080,
         },
@@ -1162,8 +1162,8 @@ async function main(): Promise<void> {
         run: () => runMarketingEngine(),
       },
       {
-        name: "jarvis-loop",
-        run: () => runJarvisLoop(),
+        name: "fsc-loop",
+        run: () => runHeartbeatLoop(),
       },
     ];
 

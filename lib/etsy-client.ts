@@ -314,7 +314,7 @@ async function fetchEtsy(path: string, options: RequestInit = {}): Promise<Respo
 }
 
 /**
- * Searches active Etsy listings for a keyword so Jarvis can estimate demand and competition.
+ * Searches active Etsy listings for a keyword so FeintSupplyCo can estimate demand and competition.
  */
 export async function searchActiveListings(keyword: string, limit = 20): Promise<EtsySearchListing[]> {
   try {

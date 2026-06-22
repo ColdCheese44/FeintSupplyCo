@@ -29,7 +29,7 @@ interface TokenResponse {
 }
 
 /**
- * Reads the project .env file so OAuth writes update the same persisted values Jarvis uses elsewhere.
+ * Reads the project .env file so OAuth writes update the same persisted values FeintSupplyCo uses elsewhere.
  */
 function readEnvState(): Record<string, string | undefined> {
   try {

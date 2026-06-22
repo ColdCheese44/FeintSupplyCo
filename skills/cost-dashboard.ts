@@ -155,13 +155,13 @@ function buildCostTable(snapshot: CostDashboardSnapshot): string {
  * Builds the Discord embed payload so operators can monitor spend and efficiency remotely.
  */
 function buildCostEmbed(snapshot: CostDashboardSnapshot, preview = false): CostDashboardResult["embed"] {
-  const title = preview ? "Jarvis Cost Dashboard (PREVIEW - Not Live Data)" : "Jarvis Cost Dashboard";
+  const title = preview ? "FeintSupplyCo Cost Dashboard (PREVIEW - Not Live Data)" : "FeintSupplyCo Cost Dashboard";
   const description = preview
-    ? "Synthetic preview of Jarvis spend and profitability reporting."
-    : "Live Jarvis spend, budget, and profitability snapshot.";
+    ? "Synthetic preview of FeintSupplyCo spend and profitability reporting."
+    : "Live FeintSupplyCo spend, budget, and profitability snapshot.";
 
   return {
-    username: "Jarvis",
+    username: "FeintSupplyCo",
     embeds: [
       {
         title,

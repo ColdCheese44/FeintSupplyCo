@@ -65,7 +65,7 @@ interface JarvisRunSummary {
   pendingApprovalCount: number;
 }
 
-const logger = createLogger("jarvis-loop");
+const logger = createLogger("fsc-loop");
 const shopSetupLogPath = resolveProjectPath("data/shop/setup-log.json");
 const heartbeatProductRotation = [...HEARTBEAT_ROTATION_PRODUCT_TYPES];
 
@@ -319,9 +319,9 @@ async function assignMissingListingSections(): Promise<number> {
 }
 
 /**
- * Runs one full Phase 2 Jarvis heartbeat cycle and returns a structured summary of the work completed.
+ * Runs one full Phase 2 FeintSupplyCo heartbeat cycle and returns a structured summary of the work completed.
  */
-export async function runJarvisLoop(): Promise<JarvisRunSummary> {
+export async function runHeartbeatLoop(): Promise<JarvisRunSummary> {
   initializeDatabase();
   enforceGlobalSafetyRails();
 
@@ -359,7 +359,7 @@ export async function runJarvisLoop(): Promise<JarvisRunSummary> {
   };
   let heartbeatShouldUpdate = false;
 
-  logger.action("Starting Jarvis heartbeat run", "start", {
+  logger.action("Starting FeintSupplyCo heartbeat run", "start", {
     researchIntervalMinutes,
     publishIntervalHours,
     maxListingsPerRun,
@@ -513,7 +513,7 @@ export async function runJarvisLoop(): Promise<JarvisRunSummary> {
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         summary.failures.push(message);
-        logger.error("Jarvis pipeline failed for one mined opportunity", error, { opportunity });
+        logger.error("FeintSupplyCo pipeline failed for one mined opportunity", error, { opportunity });
       }
     }
 
@@ -569,7 +569,7 @@ export async function runJarvisLoop(): Promise<JarvisRunSummary> {
         finishedAt: summary.finishedAt,
       });
     }
-    logger.action("Completed Jarvis heartbeat run", "success", summary);
+    logger.action("Completed FeintSupplyCo heartbeat run", "success", summary);
 
     try {
       const reportEnabled = (process.env.HEARTBEAT_DISCORD_REPORT?.trim().toLowerCase() ?? "true") !== "false";
@@ -617,14 +617,14 @@ function isDirectExecution(): boolean {
 }
 
 /**
- * Runs the standalone Jarvis loop entry point and prints the run summary as JSON.
+ * Runs the standalone FeintSupplyCo loop entry point and prints the run summary as JSON.
  */
 async function main(): Promise<void> {
   try {
-    const summary = await runJarvisLoop();
+    const summary = await runHeartbeatLoop();
     console.log(JSON.stringify(summary, null, 2));
   } catch (error) {
-    logger.error("Standalone Jarvis loop execution failed", error);
+    logger.error("Standalone FeintSupplyCo loop execution failed", error);
     process.exitCode = 1;
   }
 }

@@ -1,5 +1,5 @@
 <#
-  Jarvis Terminal - opens the dashboard as a chromeless desktop app window (Edge/Chrome --app),
+  FeintSupplyCo Terminal - opens the dashboard as a chromeless desktop app window (Edge/Chrome --app),
   the FeintTrade-style shell. Starts the dashboard server first if it is not already running.
 #>
 param([int]$Port = 4200)
@@ -49,7 +49,7 @@ if ($browser) {
     "--window-size=1480,920",
     "--user-data-dir=$profileDir"
   ) | Out-Null
-  Write-Host "Jarvis Terminal opened ($([System.IO.Path]::GetFileName($browser)) app window) at $Url"
+  Write-Host "FeintSupplyCo Terminal opened ($([System.IO.Path]::GetFileName($browser)) app window) at $Url"
 } else {
   Start-Process $Url | Out-Null
   Write-Host "No Edge/Chrome found; opened $Url in the default browser."

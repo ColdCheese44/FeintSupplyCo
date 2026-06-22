@@ -167,7 +167,7 @@ async function createProviderOrder(receipt: EtsyReceiptRecord): Promise<{
     `ORDER FULFILLED: ${listingTitle}\nPrintful order ${printfulOrder.id} created. Ships to ${receipt.city ?? "Unknown city"}`,
   );
   const singleItem = resolvedItems.length === 1 ? resolvedItems[0] : null;
-  auditLog("fulfill", "jarvis", {
+  auditLog("fulfill", "feintsupply", {
     provider: "printful",
     receiptId: receipt.receipt_id,
     printfulOrderId: printfulOrder.id,
@@ -217,7 +217,7 @@ async function refreshOpenOrderStatuses(): Promise<number> {
           await postDiscordAlert(
             `SHIPPED: ${order.listing_title ?? "Unknown listing"} -> ${latest.tracking_number} via ${latest.carrier ?? "Other"}`,
           );
-          auditLog("tracking_updated", "jarvis", {
+          auditLog("tracking_updated", "feintsupply", {
             provider: "printful",
             receiptId: order.etsy_receipt_id,
             printfulOrderId: order.printful_order_id,

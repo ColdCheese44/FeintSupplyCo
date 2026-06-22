@@ -17,7 +17,7 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const helperScriptPath = resolve(projectRoot, "scripts", "google_trends_snapshot.py");
 
 /**
- * Normalizes public-trend titles into the compact labels Jarvis uses across sources.
+ * Normalizes public-trend titles into the compact labels FeintSupplyCo uses across sources.
  */
 function normalizeLabel(value: string): string {
   return value
@@ -81,7 +81,7 @@ async function fetchGoogleTrendSignalsFallback(seedKeywords: string[], limit: nu
 }
 
 /**
- * Uses a Python helper backed by pytrends so Jarvis can fetch trend snapshots without depending on a brittle HTML scrape.
+ * Uses a Python helper backed by pytrends so FeintSupplyCo can fetch trend snapshots without depending on a brittle HTML scrape.
  */
 export async function fetchGoogleTrendSignals(seedKeywords: string[], limit = 15): Promise<GoogleTrendSignal[]> {
   const pythonExecutable = process.env.PYTHON_BIN?.trim() || "python";

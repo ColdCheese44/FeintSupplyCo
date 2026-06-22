@@ -167,7 +167,7 @@ openclaw sessions export-trajectory --agent main --session-key "agent:main:disco
 ```
 
 ```powershell
-openclaw backup create --dry-run --output C:\Users\brend\jarvis-etsy
+openclaw backup create --dry-run --output C:\Users\brend\feintsupply-etsy
 ```
 
 ```powershell

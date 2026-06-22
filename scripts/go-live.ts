@@ -88,7 +88,7 @@ function runAuditAndParse(): AuditSummary {
   });
 
   const rawOutput = `${result.stdout ?? ""}${result.stderr ?? ""}`;
-  const match = rawOutput.match(/Jarvis is (\d+)% ready to run live\. (\d+) of (\d+) required keys are valid\./);
+  const match = rawOutput.match(/FeintSupplyCo is (\d+)% ready to run live\. (\d+) of (\d+) required keys are valid\./);
   if (!match) {
     throw new Error("Could not parse the readiness line from npm run audit.");
   }
@@ -142,7 +142,7 @@ async function main(): Promise<void> {
 
   if (audit.readinessPercent < 100) {
     console.log("");
-    console.log("Go-live stopped. Remaining required gaps must be filled before Jarvis can switch out of DRY_RUN.");
+    console.log("Go-live stopped. Remaining required gaps must be filled before FeintSupplyCo can switch out of DRY_RUN.");
     process.exitCode = 1;
     return;
   }
@@ -153,7 +153,7 @@ async function main(): Promise<void> {
   }
 
   writeEnvValue("DRY_RUN", "false");
-  console.log("Jarvis is live.");
+  console.log("FeintSupplyCo is live.");
   console.log("Run npm run heartbeat.");
 }
 

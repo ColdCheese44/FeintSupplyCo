@@ -206,7 +206,7 @@ function extractThemeLabel(value: string): string {
 }
 
 /**
- * Returns the keyword seeds Jarvis uses to orient public trend sources toward Feint Supply Co.'s operator-and-tech audience.
+ * Returns the keyword seeds FeintSupplyCo uses to orient public trend sources toward Feint Supply Co.'s operator-and-tech audience.
  */
 function getThemeKeywordSeeds(): string[] {
   const nicheTokens = getActiveNiches()
@@ -351,7 +351,7 @@ function assessRealPerson(rawLabels: string[]): RealPersonAssessment {
 }
 
 /**
- * Converts raw source-specific results into the normalized weighted shape used by Jarvis scoring.
+ * Converts raw source-specific results into the normalized weighted shape used by FeintSupplyCo scoring.
  */
 function toSourceSignals(
   source: TrendSourceName,
