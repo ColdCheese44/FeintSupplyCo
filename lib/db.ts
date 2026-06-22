@@ -1298,6 +1298,37 @@ export function getDesignById(designId: number): DesignRecord | null {
   return (statement.get(designId) as DesignRecord | undefined) ?? null;
 }
 
+export interface DesignGalleryRecord {
+  id: number;
+  theme: string;
+  product_type: string;
+  image_path: string | null;
+  mockup_paths: string | null;
+  cost_usd: number;
+  quality_score: number | null;
+  created_at: string;
+  listing_id: number | null;
+  listing_title: string | null;
+  listing_status: string | null;
+}
+
+/**
+ * Returns recent designs joined with their linked listing (if any) so the dashboard can render a mockup gallery.
+ */
+export function getRecentDesigns(limit = 60): DesignGalleryRecord[] {
+  const normalizedLimit = Number.isFinite(limit) ? Math.max(1, Math.min(Math.trunc(limit), 200)) : 60;
+  const db = getDatabase();
+  return db.prepare(`
+    SELECT
+      d.id, d.theme, d.product_type, d.image_path, d.mockup_paths, d.cost_usd, d.quality_score, d.created_at,
+      l.id AS listing_id, l.title AS listing_title, l.status AS listing_status
+    FROM designs d
+    LEFT JOIN listings l ON l.design_id = d.id
+    ORDER BY d.created_at DESC, d.id DESC
+    LIMIT ?
+  `).all(normalizedLimit) as DesignGalleryRecord[];
+}
+
 /**
  * Updates generated design asset paths and quality metadata after a design job completes.
  */

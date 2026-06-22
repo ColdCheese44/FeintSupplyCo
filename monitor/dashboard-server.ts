@@ -5,10 +5,11 @@ import express from "express";
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
-import { dirname, isAbsolute, resolve } from "node:path";
+import { dirname, isAbsolute, resolve, sep } from "node:path";
 
 import {
   getDesignById,
+  getRecentDesigns,
   findShopSectionByTitle,
   getListingById,
   getPendingApprovalListings,
@@ -523,6 +524,20 @@ function resolveDesignImagePath(candidatePath: string | null | undefined): strin
 }
 
 /**
+ * Resolves a stored asset path and confirms it lives inside the project's data directory before serving it.
+ * Prevents path traversal even though stored paths come from our own pipeline.
+ */
+function resolveSafeAssetPath(candidatePath: string | null | undefined): string | null {
+  const absolute = resolveDesignImagePath(candidatePath);
+  if (!absolute) {
+    return null;
+  }
+  const dataRoot = resolve(resolveProjectPath("data"));
+  const normalized = resolve(absolute);
+  return normalized === dataRoot || normalized.startsWith(dataRoot + sep) ? normalized : null;
+}
+
+/**
  * Normalizes a numeric value pulled from DB metadata without throwing on empty or malformed values.
  */
 function readNumericCandidate(value: unknown): number | null {
@@ -1024,6 +1039,62 @@ app.get("/api/designs/:id/image", (request, response) => {
     error: "Image not found",
     tried: candidatePaths,
   });
+});
+
+app.get("/api/designs", (_request, response) => {
+  const designs = withReadonlyDatabase("designs", [], () => getRecentDesigns(60));
+  response.json(designs.map((design) => ({
+    id: design.id,
+    theme: design.theme,
+    product_type: design.product_type,
+    created_at: design.created_at,
+    cost_usd: design.cost_usd,
+    quality_score: design.quality_score,
+    listing_id: design.listing_id,
+    listing_title: design.listing_title,
+    listing_status: design.listing_status,
+    mockup_count: readMockupPaths(design.mockup_paths).length,
+    has_image: Boolean(design.image_path),
+  })));
+});
+
+app.get("/api/design/:id/asset/:kind", (request, response) => {
+  const designId = Number.parseInt(request.params.id, 10);
+  if (!Number.isFinite(designId)) {
+    response.status(400).json({ error: "Invalid design ID." });
+    return;
+  }
+
+  const design = withReadonlyDatabase<{ image_path: string | null; mockup_paths: string | null } | null>(
+    "design-asset",
+    null,
+    (db) => (db.prepare("SELECT image_path, mockup_paths FROM designs WHERE id = ?").get(designId) as {
+      image_path: string | null;
+      mockup_paths: string | null;
+    } | undefined) ?? null,
+  );
+  if (!design) {
+    response.status(404).json({ error: "Design not found." });
+    return;
+  }
+
+  let candidate: string | null;
+  if (request.params.kind === "mockup") {
+    const mockups = readMockupPaths(design.mockup_paths);
+    const index = Number.parseInt(String(request.query.i ?? "0"), 10);
+    candidate = Number.isFinite(index) ? mockups[index] ?? null : null;
+  } else {
+    candidate = design.image_path;
+  }
+
+  const assetPath = resolveSafeAssetPath(candidate);
+  if (!assetPath) {
+    response.status(404).json({ error: "Asset not found." });
+    return;
+  }
+
+  response.setHeader("Cache-Control", "public, max-age=3600");
+  response.sendFile(assetPath);
 });
 
 app.post("/api/approve/:id", async (request, response) => {

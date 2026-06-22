@@ -1,0 +1,17 @@
+{
+  "productType": "hat",
+  "designStyle": "clean embroidered cap emblem",
+  "requiresTransparency": true,
+  "targetResolution": "2400x2400",
+  "mockupAspectRatios": [
+    "1:1",
+    "4:5"
+  ],
+  "printArea": "front center embroidery",
+  "promptDirectives": [
+    "Design for thread embroidery on a cap: bold simple shapes, no gradients, no photographic detail.",
+    "Use a limited palette of 1-3 solid colors that read clearly on a dark cap.",
+    "Keep the emblem compact and centered within a small front-panel safe area.",
+    "Avoid thin lines and tiny text that cannot be stitched cleanly."
+  ]
+}

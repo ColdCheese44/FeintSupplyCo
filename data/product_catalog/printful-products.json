@@ -34,5 +34,13 @@
     "storeProductName": "Printful Hoodie",
     "variantIds": [],
     "defaultBaseCost": 24
+  },
+  {
+    "productType": "hat",
+    "storeProductName": "Feint Supply Embroidered Dad Hat",
+    "variantIds": [
+      7854
+    ],
+    "defaultBaseCost": 14.95
   }
 ]

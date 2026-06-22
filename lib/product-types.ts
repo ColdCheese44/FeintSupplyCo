@@ -4,6 +4,7 @@ export const ALL_PRODUCT_TYPES = [
   "mug",
   "poster",
   "hoodie",
+  "hat",
   "enamel-pin",
 ] as const;
 
@@ -13,6 +14,7 @@ export const HEARTBEAT_ROTATION_PRODUCT_TYPES = [
   "mug",
   "poster",
   "hoodie",
+  "hat",
 ] as const;
 
 export type ProductType = typeof ALL_PRODUCT_TYPES[number];
@@ -23,6 +25,7 @@ export const PRODUCT_BASE_PRICES: Record<ProductType, number> = {
   mug: 19.99,
   poster: 24.99,
   hoodie: 49.99,
+  hat: 26.99,
   "enamel-pin": 14.99,
 };
 
@@ -32,6 +35,7 @@ export const PRODUCT_DISPLAY_NAMES: Record<ProductType, string> = {
   mug: "mug",
   poster: "poster",
   hoodie: "hoodie",
+  hat: "embroidered hat",
   "enamel-pin": "enamel pin",
 };
 
@@ -69,6 +73,17 @@ export function normalizeProductType(value: string | null | undefined): ProductT
     case "hoodies":
     case "sweatshirt":
       return "hoodie";
+    case "hat":
+    case "hats":
+    case "cap":
+    case "caps":
+    case "dad-hat":
+    case "dad-hats":
+    case "ballcap":
+    case "baseball-cap":
+    case "snapback":
+    case "beanie":
+      return "hat";
     case "enamel-pin":
     case "enamel-pins":
     case "pin":

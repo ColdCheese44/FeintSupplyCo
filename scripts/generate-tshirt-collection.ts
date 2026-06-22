@@ -28,6 +28,7 @@ import { resolveAssetPath, toRelativePath } from "../lib/paths.js";
 import {
   createPrintfulProduct,
   getCatalogProductVariants,
+  printfulProductLabel,
   searchCatalogProducts,
   uploadFile as uploadPrintfulFile,
   type PrintfulCatalogProduct,
@@ -198,7 +199,7 @@ async function loadCachedTshirtCatalog(): Promise<CachedTshirtCatalog> {
 
   const payload = await searchCatalogProducts("unisex t-shirt");
   const product = (payload.data ?? []).find((entry) => {
-    const name = entry.name.toLowerCase();
+    const name = printfulProductLabel(entry).toLowerCase();
     return name.includes("bella") || name.includes("gildan") || name.includes("unisex");
   });
 

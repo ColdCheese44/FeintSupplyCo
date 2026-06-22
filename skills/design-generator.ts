@@ -76,6 +76,10 @@ function getDesignTaskType(input: DesignGenerationInput): LlmTaskType {
   if (productType === "enamel-pin") {
     return "vector_logos";
   }
+  if (productType === "hat") {
+    // Embroidered caps read best as clean, simple, limited-color emblems.
+    return "vector_logos";
+  }
   return "apparel_design_with_text";
 }
 

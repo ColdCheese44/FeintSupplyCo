@@ -668,6 +668,36 @@
       white-space: pre-wrap; min-height: 20px;
     }
 
+    /* Designs & mockups gallery */
+    .design-grid {
+      display: grid; gap: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+    .design-card {
+      border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+      background: rgba(13, 17, 23, 0.7); display: flex; flex-direction: column;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .design-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
+    .design-hero {
+      width: 100%; aspect-ratio: 1 / 1; object-fit: cover; cursor: zoom-in;
+      background: #0b1014; display: block;
+    }
+    .design-noimg {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 0.8rem; cursor: default;
+    }
+    .design-meta { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+    .design-theme { font-weight: 600; font-size: 0.9rem; }
+    .design-sub { color: var(--muted); font-size: 0.74rem; display: flex; align-items: center; gap: 8px; }
+    .design-thumbs { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+    .design-thumb {
+      width: 44px; height: 44px; object-fit: cover; border-radius: 6px; cursor: zoom-in;
+      border: 1px solid var(--border); background: #0b1014;
+    }
+    .design-thumb:hover, .design-hero:hover { border-color: var(--cyan); }
+    .design-thumb:focus-visible, .design-hero:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
     .refresh-button {
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -742,6 +772,7 @@
       <nav class="tab-bar" role="tablist" aria-label="Quartermaster sections">
         <button class="tab-btn active" data-tab="overview" type="button" role="tab" aria-selected="true" aria-controls="panel-overview">Overview</button>
         <button class="tab-btn" data-tab="listings" type="button" role="tab" aria-selected="false" aria-controls="panel-listings">Listings</button>
+        <button class="tab-btn" data-tab="designs" type="button" role="tab" aria-selected="false" aria-controls="panel-designs">Designs</button>
         <button class="tab-btn" data-tab="costs" type="button" role="tab" aria-selected="false" aria-controls="panel-costs">Costs</button>
         <button class="tab-btn" data-tab="heartbeat" type="button" role="tab" aria-selected="false" aria-controls="panel-heartbeat">Heartbeat</button>
         <button class="tab-btn" data-tab="orders" type="button" role="tab" aria-selected="false" aria-controls="panel-orders">Orders</button>
@@ -840,6 +871,19 @@
         </div>
         <div id="listings-panel"></div>
       </div>
+    </section>
+    </div>
+
+    <!-- ===== DESIGNS / MOCKUPS ===== -->
+    <div class="tab-panel" id="panel-designs" role="tabpanel">
+    <section class="card panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Designs &amp; Mockups</h2>
+          <span class="panel-subtitle" id="designs-subtitle">Recent generated designs and product mockups</span>
+        </div>
+      </div>
+      <div id="designs-panel"></div>
     </section>
     </div>
 
@@ -1154,6 +1198,49 @@
       if (lightboxReturnFocus instanceof HTMLElement) {
         lightboxReturnFocus.focus();
       }
+    }
+
+    function renderDesigns(rows) {
+      const subtitle = document.getElementById("designs-subtitle");
+      if (!rows.length) {
+        if (subtitle) subtitle.textContent = "No designs generated yet";
+        renderEmpty("designs-panel", "No designs generated yet — run the heartbeat or a collection generator");
+        return;
+      }
+      if (subtitle) subtitle.textContent = `${rows.length} recent design${rows.length === 1 ? "" : "s"}`;
+
+      const statusBadge = (value) => {
+        const status = String(value ?? "").toLowerCase();
+        if (!status) return "";
+        const cls = status === "published"
+          ? "status-shipped"
+          : (status === "rejected" || status === "failed")
+            ? "status-failed"
+            : "status-pending";
+        return `<span class="status-pill ${cls}">${escapeHtml(status.replace(/_/g, " "))}</span>`;
+      };
+
+      const html = `<div class="design-grid">${rows.map((row) => {
+        const primary = `/api/design/${row.id}/asset/design`;
+        const thumbs = [];
+        for (let i = 0; i < (row.mockup_count || 0); i += 1) {
+          const src = `/api/design/${row.id}/asset/mockup?i=${i}`;
+          thumbs.push(`<img class="design-thumb" src="${src}" alt="mockup ${i + 1}" tabindex="0" data-lightbox-src="${src}" loading="lazy" onerror="this.style.display='none'">`);
+        }
+        const hero = row.has_image
+          ? `<img class="design-hero" src="${primary}" alt="${escapeAttr(String(row.theme ?? ""))}" tabindex="0" data-lightbox-src="${primary}" loading="lazy" onerror="this.style.opacity='0.2'; this.alt='[ no preview ]'">`
+          : `<div class="design-hero design-noimg">no preview</div>`;
+        return `
+          <div class="design-card">
+            ${hero}
+            <div class="design-meta">
+              <div class="design-theme" title="${escapeAttr(String(row.theme ?? ""))}">${escapeHtml(truncate(String(row.theme ?? "Untitled"), 42))}</div>
+              <div class="design-sub mono">${escapeHtml(String(row.product_type ?? ""))} ${statusBadge(row.listing_status)}</div>
+              <div class="design-thumbs">${thumbs.join("") || '<span class="design-sub mono">no mockups yet</span>'}</div>
+            </div>
+          </div>`;
+      }).join("")}</div>`;
+      document.getElementById("designs-panel").innerHTML = html;
     }
 
     function renderNiches(rows) {
@@ -1508,6 +1595,7 @@
           ["overview", "/api/overview", renderOverview],
           ["pending approvals", "/api/pending", renderPending],
           ["listings", "/api/listings", renderListings],
+          ["designs", "/api/designs", renderDesigns],
           ["analytics", "/api/analytics", renderAnalytics],
           ["costs", "/api/costs", renderCosts],
           ["niches", "/api/niches", renderNiches],

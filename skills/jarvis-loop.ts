@@ -34,7 +34,7 @@ import { runEtsyAnalytics } from "./etsy-analytics.js";
 import { publishListing } from "./etsy-publish.js";
 import { runCostDashboard } from "./cost-dashboard.js";
 import { generateDesignBundle } from "./design-generator.js";
-import { postDiscordText } from "../lib/discord.js";
+import { postDiscord, postDiscordText } from "../lib/discord.js";
 import { runIgmMonitor } from "./igm-monitor.js";
 import { generateListing, refreshLowViewListingTags } from "./listing-gen.js";
 import { runMarketingEngine } from "./marketing-engine.js";
@@ -570,6 +570,40 @@ export async function runJarvisLoop(): Promise<JarvisRunSummary> {
       });
     }
     logger.action("Completed Jarvis heartbeat run", "success", summary);
+
+    try {
+      const reportEnabled = (process.env.HEARTBEAT_DISCORD_REPORT?.trim().toLowerCase() ?? "true") !== "false";
+      if (reportEnabled) {
+        const failed = summary.failures.length > 0;
+        await postDiscord("heartbeat", {
+          embeds: [
+            {
+              title: failed ? "Heartbeat complete — with issues" : "Heartbeat complete",
+              description: `Cycle ran ${summary.startedAt} → ${summary.finishedAt}.`,
+              color: failed ? 0xffb000 : 0x10a37f,
+              timestamp: summary.finishedAt,
+              fields: [
+                { name: "Opportunities", value: String(summary.opportunitiesConsidered), inline: true },
+                { name: "Designs", value: String(summary.designsGenerated.length), inline: true },
+                { name: "Listings", value: String(summary.listingsGenerated.length), inline: true },
+                { name: "Published", value: String(summary.productsPublished.length), inline: true },
+                { name: "Pending approval", value: String(summary.pendingApprovalCount), inline: true },
+                { name: "Today's cost", value: `$${summary.totalCostUsd.toFixed(2)}`, inline: true },
+                {
+                  name: "Failures",
+                  value: summary.failures.length ? summary.failures.slice(0, 3).join("\n").slice(0, 1000) : "None",
+                  inline: false,
+                },
+              ],
+            },
+          ],
+        });
+      }
+    } catch (error) {
+      logger.warn("Failed to post heartbeat summary to Discord", {
+        reason: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
 
   return summary;

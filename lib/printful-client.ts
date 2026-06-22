@@ -69,8 +69,21 @@ export interface PrintfulFileUploadResult {
 
 export interface PrintfulCatalogProduct {
   id: number;
-  name: string;
+  name?: string;
+  // Printful's v1 /products catalog uses these fields rather than `name`.
+  title?: string;
+  type_name?: string;
+  model?: string;
+  brand?: string;
   variants?: PrintfulCatalogVariant[];
+}
+
+/**
+ * Returns a human-readable label for a Printful catalog product across v1/v2 response shapes.
+ */
+export function printfulProductLabel(product: PrintfulCatalogProduct): string {
+  const brandModel = [product.brand, product.model].filter(Boolean).join(" ").trim();
+  return product.name ?? product.title ?? (brandModel || product.type_name || "");
 }
 
 export interface PrintfulCatalogVariant {
@@ -79,7 +92,8 @@ export interface PrintfulCatalogVariant {
   color?: string;
   color_code?: string;
   size?: string;
-  availability_status?: string;
+  // Printful v1 reports availability as an array of per-region {region, status}; older shapes used a string.
+  availability_status?: string | Array<{ region?: string; status?: string }>;
 }
 
 export interface PrintfulMockupResult {
@@ -115,6 +129,7 @@ export const PRINTFUL_BLUEPRINT_IDS = {
   poster: 1,
   mug: 19,
   hoodie: 146,
+  hat: 206, // Classic Dad Hat (Yupoong 6245CM)
   "enamel-pin": null,
 } as const;
 
@@ -208,7 +223,7 @@ export async function searchCatalogProducts(search: string): Promise<{ data?: Pr
   const normalizedSearch = search.trim().toLowerCase();
 
   return {
-    data: products.filter((product) => product.name.toLowerCase().includes(normalizedSearch)),
+    data: products.filter((product) => printfulProductLabel(product).toLowerCase().includes(normalizedSearch)),
   };
 }
 
@@ -231,10 +246,27 @@ export async function getCatalogProductVariants(productId: number | string): Pro
   };
   const variants = payload.result?.variants ?? [];
 
-  return variants.filter((variant) => {
-    const availability = `${variant.availability_status ?? ""}`.toLowerCase();
-    return availability === "active" || availability.includes("active");
-  });
+  return variants.filter((variant) => isVariantOrderable(variant.availability_status));
+}
+
+/**
+ * Returns whether a Printful catalog variant is orderable.
+ *
+ * Printful v1 reports availability as an array of per-region `{region, status}` where status is
+ * `in_stock` / `stocked_on_demand` / `discontinued` / `out_of_stock`. A variant is orderable when at
+ * least one region is in_stock or stocked_on_demand. Legacy string statuses and missing data are
+ * handled conservatively so a shape change can never silently drop the entire catalog again.
+ */
+function isVariantOrderable(status: PrintfulCatalogVariant["availability_status"]): boolean {
+  const orderable = new Set(["in_stock", "stocked_on_demand", "active"]);
+  if (Array.isArray(status)) {
+    return status.some((entry) => orderable.has(`${entry?.status ?? ""}`.toLowerCase()));
+  }
+  const value = `${status ?? ""}`.toLowerCase();
+  if (!value) {
+    return true; // No availability info: let order placement validate rather than dropping everything.
+  }
+  return orderable.has(value) || value.includes("active") || value.includes("in_stock");
 }
 
 /**
@@ -262,7 +294,7 @@ async function resolveBlueprintForProductType(productType: string): Promise<{ bl
     if (normalizedType === "t-shirt" || normalizedType === "hoodie") {
       const payload = await searchCatalogProducts(normalizedType === "hoodie" ? "unisex hoodie" : "unisex t-shirt");
       const product = (payload.data ?? []).find((entry) => {
-        const name = entry.name.toLowerCase();
+        const name = printfulProductLabel(entry).toLowerCase();
         return normalizedType === "hoodie"
           ? name.includes("hoodie")
           : name.includes("bella") || name.includes("gildan") || name.includes("unisex");
@@ -283,7 +315,7 @@ async function resolveBlueprintForProductType(productType: string): Promise<{ bl
     if (normalizedType === "sticker") {
       const payload = await searchCatalogProducts("kiss cut sticker");
       const product = (payload.data ?? []).find((entry) => {
-        const name = entry.name.toLowerCase();
+        const name = printfulProductLabel(entry).toLowerCase();
         return name.includes("kiss") || name.includes("die cut") || name.includes("sticker");
       }) ?? (payload.data ?? [])[0];
 
@@ -314,11 +346,17 @@ async function resolveBlueprintForProductType(productType: string): Promise<{ bl
       blueprintId: fallbackBlueprintId,
     });
     const variants = await getCatalogProductVariants(fallbackBlueprintId);
-    const resolvedVariants = normalizedType === "t-shirt" || normalizedType === "hoodie"
-      ? filterBlackApparelVariants(variants)
-      : variants.length > 0
-        ? [variants[0]]
-        : [];
+    let resolvedVariants: PrintfulCatalogVariant[];
+    if (normalizedType === "t-shirt" || normalizedType === "hoodie") {
+      resolvedVariants = filterBlackApparelVariants(variants);
+    } else if (normalizedType === "hat") {
+      // Hats are one-size; prefer the black colorway, else the first orderable variant.
+      const black = variants.find((variant) =>
+        `${variant.color ?? ""} ${variant.name ?? ""}`.toLowerCase().includes("black"));
+      resolvedVariants = black ? [black] : variants.length > 0 ? [variants[0]] : [];
+    } else {
+      resolvedVariants = variants.length > 0 ? [variants[0]] : [];
+    }
 
     if (resolvedVariants.length === 0) {
       throw new Error(`Hardcoded Printful blueprint ${fallbackBlueprintId} for ${normalizedType} did not return usable variants.`);

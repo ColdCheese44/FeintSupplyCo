@@ -8,7 +8,13 @@ Feint Supply Co. is a substantial TypeScript automation stack, not a storefront 
 
 The core pipeline is operational with manual approval enabled. The audit repaired several defects that previously made the dashboard appear empty, stopped image generation unnecessarily, misreported budget availability, left product types only partially configured, and made multi-item fulfillment unsafe. The project compiles and the complete read-only smoke suite passes.
 
-The current implementation supports stickers, t-shirts, mugs, posters, hoodies, and a manual Etsy-only enamel-pin flow. Hats and pens are not implemented yet, so the broader catalog goal is not complete.
+The current implementation supports stickers, t-shirts, mugs, posters, hoodies, **embroidered hats** (Printful Classic Dad Hat, product 206 / black variant 7854), and a manual Etsy-only enamel-pin flow. Pens are still not implemented (no reliable mainstream POD supplier), so the broader catalog goal is close but not complete.
+
+## 2026-06-21 follow-up (continuous improvement)
+
+- **Critical Printful fix:** `getCatalogProductVariants` filtered variants for the literal string `"active"`, but Printful's v1 `/products/{id}` returns `availability_status` as an array of per-region `{region, status}` (`in_stock` / `stocked_on_demand`). The filter therefore returned **zero variants for every product** (the working t-shirt blueprint 71 has 590), silently breaking Printful sync-product creation and forcing the Printify fallback for all POD. The filter now parses the per-region array (`isVariantOrderable`), defends against missing data, and t-shirt 71 resolves to 589 orderable variants again.
+- **Catalog search hardened:** `searchCatalogProducts` dereferenced `product.name`, but the v1 catalog uses `title` / `type_name` / `brand`+`model`. Added `printfulProductLabel()` and made the catalog name optional, so a shape change can't crash catalog resolution.
+- **Hats shipped as a fully automatic POD product:** product type, normalization (`hat`/`cap`/`dad-hat`/`snapback`/`beanie`), `$26.99` price (~45% margin over the ~`$14.95` embroidered base), heartbeat rotation, `vector_logos` design routing (embroidery-friendly), a hat design template, a Printful catalog backup record, and a black-variant preference in catalog resolution. Verified: `hat` resolves to blueprint 206 / variant 7854, a dry-run hat design bundle generates, build + full smoke pass.
 
 ## Architecture
 
@@ -96,7 +102,8 @@ The current implementation supports stickers, t-shirts, mugs, posters, hoodies, 
 
 ### Catalog breadth
 
-- Hats and pens need product types, design templates, prices, provider catalog mappings, variants, mockup rules, listing guidance, and fulfillment tests.
+- Hats are now implemented (see follow-up above). A live test order is still needed to validate embroidery placement (the sync file currently uses the `default` placement type).
+- Pens need a reliable POD supplier before they can be added (no mainstream Printful/Printify pen product).
 - Enamel pins remain a manual made-to-order Etsy flow rather than automatic POD fulfillment.
 
 ### Marketing
