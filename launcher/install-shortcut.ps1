@@ -49,7 +49,7 @@ $arguments = "-ExecutionPolicy Bypass -STA -WindowStyle Hidden -File `"$projectR
 New-Shortcut -ShortcutPath $desktopShortcutPath -TargetPath $powershellPath -Arguments $arguments -WorkingDirectory $projectRoot -IconLocation $iconPath
 New-Shortcut -ShortcutPath $startMenuPath -TargetPath $powershellPath -Arguments $arguments -WorkingDirectory $projectRoot -IconLocation $iconPath
 
-# Second shortcut: "FeintSupplyCo Terminal" opens the dashboard directly as a chromeless app window.
+# Second shortcut: "FeintSupplyCo Terminal" opens the dashboard directly as a fullscreen Brave app window.
 $terminalArgs = "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$projectRoot\launcher\fsc-terminal.ps1`""
 $terminalDesktop = Join-Path $desktopPath "FeintSupplyCo Terminal.lnk"
 $terminalStartMenu = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\FeintSupplyCo Terminal.lnk"

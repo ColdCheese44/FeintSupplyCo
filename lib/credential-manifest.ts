@@ -86,16 +86,6 @@ export const credentialManifest: CredentialManifestEntry[] = [
     true,
   ),
   entry(
-    "OpenAI",
-    "OPENAI_API_KEY",
-    true,
-    "prefix sk-",
-    "https://platform.openai.com/api-keys",
-    ["llm-router fallback", "design-generator fallback", "mockup generation", "SEO fallback"],
-    (value) => value.startsWith("sk-"),
-    true,
-  ),
-  entry(
     "Replicate",
     "REPLICATE_API_TOKEN",
     true,

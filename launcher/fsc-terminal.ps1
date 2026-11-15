@@ -1,5 +1,5 @@
 <#
-  FeintSupplyCo Terminal - opens the dashboard as a chromeless desktop app window (Edge/Chrome --app),
+  FeintSupplyCo Terminal - opens the dashboard as a fullscreen Brave desktop app window,
   the FeintTrade-style shell. Starts the dashboard server first if it is not already running.
 #>
 param([int]$Port = 4200)
@@ -7,6 +7,7 @@ param([int]$Port = 4200)
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $Url = "http://localhost:$Port"
+. (Join-Path $PSScriptRoot "feint-browser.ps1")
 
 # Returns whether something is already listening on the dashboard port.
 function Test-DashboardUp {
@@ -32,25 +33,15 @@ if (-not (Test-DashboardUp)) {
   }
 }
 
-# Prefer Microsoft Edge, fall back to Chrome, then the default browser.
-$candidates = @(
-  (Join-Path $env:ProgramFiles "Microsoft\Edge\Application\msedge.exe"),
-  (Join-Path ${env:ProgramFiles(x86)} "Microsoft\Edge\Application\msedge.exe"),
-  (Join-Path $env:ProgramFiles "Google\Chrome\Application\chrome.exe"),
-  (Join-Path ${env:ProgramFiles(x86)} "Google\Chrome\Application\chrome.exe")
+# A dedicated user-data-dir gives the app window its own identity and taskbar entry.
+$profileDir = Join-Path $env:LOCALAPPDATA "FeintSupplyCoTerminal"
+$openedWithBrave = Open-FeintBrowser -Url $Url -App -ExtraArguments @(
+  "--window-size=1480,920",
+  "--user-data-dir=$profileDir"
 )
-$browser = $candidates | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
 
-if ($browser) {
-  # A dedicated user-data-dir gives the app window its own identity and taskbar entry.
-  $profileDir = Join-Path $env:LOCALAPPDATA "JarvisTerminal"
-  Start-Process -FilePath $browser -ArgumentList @(
-    "--app=$Url",
-    "--window-size=1480,920",
-    "--user-data-dir=$profileDir"
-  ) | Out-Null
-  Write-Host "FeintSupplyCo Terminal opened ($([System.IO.Path]::GetFileName($browser)) app window) at $Url"
+if ($openedWithBrave) {
+  Write-Host "FeintSupplyCo Terminal opened in Brave app mode at $Url"
 } else {
-  Start-Process $Url | Out-Null
-  Write-Host "No Edge/Chrome found; opened $Url in the default browser."
+  Write-Host "Brave unavailable; opened $Url in the default browser."
 }

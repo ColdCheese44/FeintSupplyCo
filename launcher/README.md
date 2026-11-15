@@ -13,13 +13,23 @@ npm run install-launcher
 
 That creates two Desktop + Start Menu shortcuts:
 - **FeintSupplyCo** — the control panel ([`fsc-app.ps1`](fsc-app.ps1)): buttons + live status.
-- **FeintSupplyCo Terminal** — opens the dashboard straight into a **chromeless app window** (FeintTrade-style), starting the server if needed ([`fsc-terminal.ps1`](fsc-terminal.ps1)).
+- **FeintSupplyCo Terminal** — opens the dashboard straight into a **fullscreen Brave app window** (FeintTrade-style), starting the server if needed ([`fsc-terminal.ps1`](fsc-terminal.ps1)).
 
 To launch without shortcuts:
 
 ```powershell
 npm run app        # control panel
-npm run terminal   # dashboard as a chromeless app window
+npm run terminal   # dashboard as a fullscreen Brave app window
+```
+
+Browser launch defaults are centralized in [`feint-browser.ps1`](feint-browser.ps1). The launcher looks for Brave at `FEINT_BROWSER_PATH`, then common Windows install locations, then PATH. If Brave is unavailable it falls back to the default browser with a warning.
+
+Optional overrides:
+
+```powershell
+$env:FEINT_BROWSER_MODE="fullscreen" # fullscreen, maximized, normal, or kiosk
+$env:FEINT_BROWSER_PATH="C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
+$env:FEINT_BROWSER="brave"
 ```
 
 The dashboard itself is a dark, tabbed **operator terminal** (Overview, Listings, Costs, Heartbeat,

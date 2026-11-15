@@ -1,13 +1,13 @@
 import "dotenv/config";
 
 import { createHash, randomBytes } from "node:crypto";
-import { exec, type ExecException } from "node:child_process";
 import { createServer } from "node:http";
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { parse as parseDotenv } from "dotenv";
+import { openInFeintBrowser } from "../lib/browser-launcher.js";
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const envPath = resolve(projectRoot, ".env");
@@ -113,18 +113,12 @@ function createStateNonce(): string {
 }
 
 /**
- * Opens the Etsy authorization URL in the default Windows browser and falls back to manual instructions on failure.
+ * Opens the Etsy authorization URL in the Feint browser and falls back to manual instructions on failure.
  */
 async function launchBrowser(url: string): Promise<void> {
-  await new Promise<void>((resolvePromise) => {
-    exec(`start "" "${url.replace(/"/g, '""')}"`, { shell: true as unknown as string }, (error: ExecException | null) => {
-      if (error) {
-        console.warn(`Browser auto-launch failed: ${error.message}`);
-        console.warn(`Open this URL manually: ${url}`);
-      }
-      resolvePromise();
-    });
-  });
+  if (!openInFeintBrowser(url)) {
+    console.warn(`Browser auto-launch failed. Open this URL manually: ${url}`);
+  }
 }
 
 /**

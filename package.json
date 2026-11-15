@@ -33,6 +33,7 @@
     "go-live": "tsx scripts/go-live.ts",
     "etsy:oauth": "tsx scripts/etsy-oauth.ts",
     "preview-digest": "tsx scripts/preview-digest.ts",
+    "test:browser-launcher": "tsx scripts/test-browser-launcher.ts",
     "test:trademark": "tsx skills/trademark-hunter.ts --self-test",
     "test:printify-upload": "tsx scripts/test-printify-upload.ts",
     "test:printful-upload": "tsx scripts/test-printful-upload.ts",
@@ -71,22 +72,21 @@
     "register:skills": "powershell -ExecutionPolicy Bypass -File openclaw/register-skills.ps1"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "latest",
+    "@anthropic-ai/sdk": "^1.8.0",
     "@types/express": "^5.0.6",
-    "better-sqlite3": "latest",
-    "dotenv": "latest",
+    "better-sqlite3": "^12.10.0",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "node-fetch": "latest",
-    "openai": "latest",
-    "pdf-lib": "latest",
-    "replicate": "latest",
+    "node-fetch": "^3.3.2",
+    "pdf-lib": "^1.17.1",
+    "replicate": "^1.4.0",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "latest",
-    "@types/node": "latest",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.9.0",
     "@types/sharp": "^0.32.0",
-    "tsx": "latest",
-    "typescript": "latest"
+    "tsx": "^4.22.2",
+    "typescript": "^6.0.3"
   }
 }

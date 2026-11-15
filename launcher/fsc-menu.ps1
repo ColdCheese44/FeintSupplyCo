@@ -4,6 +4,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "feint-browser.ps1")
 
 function Get-ProjectRoot {
   return Split-Path -Parent $PSScriptRoot
@@ -185,7 +186,7 @@ function Open-Dashboard {
   ) -WorkingDirectory $projectRoot -WindowStyle Normal | Out-Null
 
   Start-Sleep -Seconds 2
-  Start-Process "http://localhost:4200" | Out-Null
+  Open-FeintBrowser -Url "http://localhost:4200" | Out-Null
 }
 
 function Show-LatestLogs {

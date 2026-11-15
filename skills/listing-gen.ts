@@ -405,7 +405,6 @@ async function generateListingCopyBundle(
     taskType: "listing_copywriting",
     prompt,
     maxTokens: 1_600,
-    temperature: 0.55,
     expectJson: true,
   });
 
@@ -601,7 +600,6 @@ export async function refreshLowViewListingTags(): Promise<number> {
               keyword,
             }),
             maxTokens: 180,
-            temperature: 0.45,
           })
         ).text ?? "",
       ));

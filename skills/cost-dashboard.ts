@@ -220,6 +220,8 @@ function loadLiveSnapshot(): CostDashboardSnapshot {
   const todayWindow = "datetime('now', 'start of day')";
   const sevenDayWindow = "datetime('now', '-7 days')";
 
+  // 'openai' is retained in these provider filters only so historical llm_calls rows
+  // logged before the Claude-only migration still classify as text spend rather than image spend.
   const llmToday = Number((db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS total FROM llm_calls WHERE provider IN ('claude', 'openai') AND created_at >= ${todayWindow}`).get() as { total: number }).total ?? 0);
   const llmSevenDay = Number((db.prepare(`SELECT COALESCE(SUM(cost_usd), 0) AS total FROM llm_calls WHERE provider IN ('claude', 'openai') AND created_at >= ${sevenDayWindow}`).get() as { total: number }).total ?? 0);
 

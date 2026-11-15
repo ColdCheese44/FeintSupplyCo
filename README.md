@@ -1,11 +1,11 @@
 # Feint Supply Co. Automation
 
-FeintSupplyCo is an autonomous commerce stack built around TypeScript skills for OpenClaw and Python support utilities. It researches Etsy opportunities, mines nostalgia trends, routes work across multiple AI providers, generates product art and mockups, publishes POD-backed products through Printify and Etsy, monitors orders, and posts performance summaries to Discord.
+FeintSupplyCo is an autonomous commerce stack built around TypeScript skills for OpenClaw and Python support utilities. It researches Etsy opportunities, mines nostalgia trends, runs all text generation on Claude, generates product art and mockups, publishes POD-backed products through Printify and Etsy, monitors orders, and posts performance summaries to Discord.
 
 ## What is included
 
 - `skills/`: standalone OpenClaw-friendly TypeScript entry points for research, copy generation, design generation, POD publishing, fulfillment, trademark review, marketing, analytics, and orchestration
-- `lib/`: shared clients for Etsy, Claude, OpenAI, Replicate, Printify, Printful, Pinterest, USPTO, Reddit, SQLite, and structured logging
+- `lib/`: shared clients for Etsy, Claude, Replicate, Ideogram, Recraft, Printify, Printful, Pinterest, USPTO, Reddit, SQLite, and structured logging
 - `scripts/`: Python helpers for seeding niches, exporting listings, and analyzing performance
 - `openclaw/`: lightweight wrappers for heartbeat and order-watch execution inside OpenClaw
 - `data/`: prompts, niches, images, designs, product catalogs, trademark dossiers, and the SQLite database
@@ -99,6 +99,20 @@ Operations phase:
 - `npm run costs` - current spend dashboard
 - `npm run watchdog` - heartbeat health check
 - `npm run install-launcher` - install the Windows desktop launcher
+
+## Browser launch behavior
+
+Human-facing browser flows prefer Brave in fullscreen mode by default. This covers the Windows dashboard launchers and the Etsy OAuth helper. If Brave is unavailable, FeintSupplyCo logs a warning and falls back to the system default browser.
+
+Environment overrides:
+
+```powershell
+$env:FEINT_BROWSER_MODE="fullscreen" # fullscreen, maximized, normal, or kiosk
+$env:FEINT_BROWSER_PATH="C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
+$env:FEINT_BROWSER="brave"
+```
+
+`FEINT_BROWSER_MODE` defaults to `fullscreen`; kiosk is only used when explicitly requested.
 
 ## Autonomous operation (daemon)
 

@@ -1,5 +1,9 @@
 # Feint Supply Co. Project Audit
 
+> Superseded 2026-11-14: OpenAI was removed from the stack. Text generation is Claude-only;
+> image fallbacks are Ideogram and Recraft. The OpenAI notes below are historical.
+
+
 Audit date: 2026-06-21
 
 ## Executive summary

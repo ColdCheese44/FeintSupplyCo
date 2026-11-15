@@ -2,11 +2,16 @@ import "dotenv/config";
 
 import { performance } from "node:perf_hooks";
 
-import { runClaudeCompletion } from "./claude-client.js";
+import {
+  CLAUDE_BALANCED_MODEL,
+  CLAUDE_LIGHTWEIGHT_MODEL,
+  CLAUDE_QUALITY_MODEL,
+  runClaudeCompletion,
+  type ClaudeEffort,
+} from "./claude-client.js";
 import { recordLlmCall } from "./db.js";
 import { generateIdeogramImages } from "./ideogram-client.js";
 import { createLogger } from "./logger.js";
-import { generateOpenAIImageToPath, generateOpenAIText } from "./openai-client.js";
 import { generateRecraftImages } from "./recraft-client.js";
 import { generateReplicateImage } from "./replicate-client.js";
 
@@ -22,11 +27,12 @@ export type LlmTaskType =
   | "customer_service_replies"
   | "trademark_dossier_writing";
 
-type ProviderName = "claude" | "openai" | "openai_image" | "ideogram" | "recraft" | "replicate";
+type ProviderName = "claude" | "ideogram" | "recraft" | "replicate";
 
 interface RouteDefinition {
   provider: ProviderName;
   model: string;
+  effort?: ClaudeEffort;
 }
 
 export interface CallLlmInput {
@@ -35,7 +41,7 @@ export interface CallLlmInput {
   system?: string;
   destinationPath?: string;
   destinationPaths?: string[];
-  temperature?: number;
+  effort?: ClaudeEffort;
   maxTokens?: number;
   size?: "1024x1024" | "1024x1536" | "1536x1024";
   transparentBackground?: boolean;
@@ -55,6 +61,11 @@ export interface CallLlmResult {
 
 const logger = createLogger("llm-router");
 
+const FLUX_SCHNELL_MODEL = "black-forest-labs/flux-schnell";
+const SDXL_MODEL = "stability-ai/sdxl";
+const IDEOGRAM_MODEL = "ideogram-v3";
+const RECRAFT_MODEL = "recraftv4";
+
 /**
  * Returns the configured routing strategy and falls back safely when the env value is invalid.
  */
@@ -67,75 +78,106 @@ function getRoutingStrategy(): "cost_optimized" | "quality_first" | "speed_first
 }
 
 /**
- * Builds the ordered provider route list from the project routing policy for the given task type.
+ * Picks the Claude tier chain for general text work based on the configured routing strategy.
+ * Every tier is Claude; the fallback covers transient per-model failures, not another vendor.
  */
-function getRouteDefinitions(taskType: LlmTaskType): RouteDefinition[] {
-  const strategy = getRoutingStrategy();
-  const openAiTextModel = strategy === "speed_first" ? "gpt-4.1-mini" : "gpt-4.1";
-  const claudePrimaryModel = "claude-sonnet-4-6";
-  const claudeLightweightModel = "claude-haiku-4-5-20251001";
-  const fluxSchnellModel = "black-forest-labs/flux-schnell";
-  const sdxlModel = "stability-ai/sdxl";
-  const mockupModel = "gpt-image-1";
-
-  switch (taskType) {
-    case "listing_copywriting":
-    case "product_description_seo":
-    case "trend_analysis_reasoning":
-    case "trademark_dossier_writing":
+function getClaudeTextRoutes(): RouteDefinition[] {
+  switch (getRoutingStrategy()) {
+    case "quality_first":
       return [
-        { provider: "claude", model: claudePrimaryModel },
-        { provider: "openai", model: openAiTextModel },
+        { provider: "claude", model: CLAUDE_QUALITY_MODEL, effort: "high" },
+        { provider: "claude", model: CLAUDE_BALANCED_MODEL, effort: "high" },
       ];
-    case "customer_service_replies":
+    case "speed_first":
       return [
-        { provider: "claude", model: claudeLightweightModel },
-        { provider: "openai", model: "gpt-4.1-mini" },
+        { provider: "claude", model: CLAUDE_LIGHTWEIGHT_MODEL, effort: "low" },
+        { provider: "claude", model: CLAUDE_BALANCED_MODEL, effort: "low" },
       ];
-    case "photorealistic_mockups":
+    case "cost_optimized":
       return [
-        { provider: "openai_image", model: mockupModel },
-        { provider: "replicate", model: fluxSchnellModel },
-        { provider: "replicate", model: sdxlModel },
-      ];
-    case "apparel_design_with_text":
-      return [
-        { provider: "ideogram", model: "ideogram-v3" },
-        { provider: "openai_image", model: mockupModel },
-        { provider: "replicate", model: fluxSchnellModel },
-      ];
-    case "vector_logos":
-      return [
-        { provider: "recraft", model: "recraftv4" },
-        { provider: "ideogram", model: "ideogram-v3" },
-        { provider: "replicate", model: fluxSchnellModel },
-      ];
-    case "shop_banner":
-      return [
-        { provider: "openai_image", model: mockupModel },
-        { provider: "replicate", model: fluxSchnellModel },
-        { provider: "ideogram", model: "ideogram-v3" },
-      ];
-    case "bulk_variant_generation":
-      return [
-        { provider: "replicate", model: fluxSchnellModel },
-        { provider: "openai_image", model: mockupModel },
+        { provider: "claude", model: CLAUDE_BALANCED_MODEL, effort: "medium" },
+        { provider: "claude", model: CLAUDE_LIGHTWEIGHT_MODEL, effort: "medium" },
       ];
   }
 }
 
 /**
- * Estimates text-model cost conservatively enough to support routing analytics and spend caps.
+ * Reports whether a provider has a usable credential, so the router can skip routes
+ * that would fail on a missing key instead of spending an attempt on them.
+ */
+function isProviderConfigured(provider: ProviderName): boolean {
+  switch (provider) {
+    case "claude":
+      return Boolean(process.env.ANTHROPIC_API_KEY?.trim());
+    case "replicate":
+      return Boolean(process.env.REPLICATE_API_TOKEN?.trim());
+    case "ideogram":
+      return Boolean(process.env.IDEOGRAM_API_KEY?.trim());
+    case "recraft":
+      return Boolean(process.env.RECRAFT_API_KEY?.trim());
+  }
+}
+
+/**
+ * Builds the ordered provider route list from the project routing policy for the given task type.
+ *
+ * Text generation is Claude end to end. Image generation stays multi-provider because Claude
+ * does not render pixels: Claude authors the art prompt at the callsite, these providers draw it.
+ */
+function getRouteDefinitions(taskType: LlmTaskType): RouteDefinition[] {
+  switch (taskType) {
+    case "listing_copywriting":
+    case "product_description_seo":
+    case "trend_analysis_reasoning":
+    case "trademark_dossier_writing":
+      return getClaudeTextRoutes();
+    case "customer_service_replies":
+      return [
+        { provider: "claude", model: CLAUDE_LIGHTWEIGHT_MODEL, effort: "low" },
+        { provider: "claude", model: CLAUDE_BALANCED_MODEL, effort: "low" },
+      ];
+    case "photorealistic_mockups":
+      return [
+        { provider: "replicate", model: FLUX_SCHNELL_MODEL },
+        { provider: "replicate", model: SDXL_MODEL },
+      ];
+    case "apparel_design_with_text":
+      return [
+        { provider: "ideogram", model: IDEOGRAM_MODEL },
+        { provider: "replicate", model: FLUX_SCHNELL_MODEL },
+        { provider: "replicate", model: SDXL_MODEL },
+      ];
+    case "vector_logos":
+      return [
+        { provider: "recraft", model: RECRAFT_MODEL },
+        { provider: "ideogram", model: IDEOGRAM_MODEL },
+        { provider: "replicate", model: FLUX_SCHNELL_MODEL },
+      ];
+    case "shop_banner":
+      return [
+        { provider: "replicate", model: FLUX_SCHNELL_MODEL },
+        { provider: "ideogram", model: IDEOGRAM_MODEL },
+        { provider: "replicate", model: SDXL_MODEL },
+      ];
+    case "bulk_variant_generation":
+      return [
+        { provider: "replicate", model: FLUX_SCHNELL_MODEL },
+        { provider: "replicate", model: SDXL_MODEL },
+      ];
+  }
+}
+
+/**
+ * Estimates text-model cost from current published Anthropic per-million-token rates.
  */
 function estimateTextCost(model: string, promptTokens: number, completionTokens: number): number {
   const rates: Record<string, { input: number; output: number }> = {
-    "claude-sonnet-4-6": { input: 0.000003, output: 0.000015 },
-    "claude-haiku-4-5-20251001": { input: 0.000001, output: 0.000005 },
-    "gpt-4.1": { input: 0.000002, output: 0.000008 },
-    "gpt-4.1-mini": { input: 0.0000004, output: 0.0000016 },
+    [CLAUDE_QUALITY_MODEL]: { input: 0.000004, output: 0.00002 },
+    [CLAUDE_BALANCED_MODEL]: { input: 0.000002, output: 0.00001 },
+    [CLAUDE_LIGHTWEIGHT_MODEL]: { input: 0.0000001, output: 0.0000005 },
   };
 
-  const rate = rates[model] ?? { input: 0.000002, output: 0.000008 };
+  const rate = rates[model] ?? rates[CLAUDE_BALANCED_MODEL];
   return Number(((promptTokens * rate.input) + (completionTokens * rate.output)).toFixed(6));
 }
 
@@ -144,11 +186,10 @@ function estimateTextCost(model: string, promptTokens: number, completionTokens:
  */
 function estimateImageCost(model: string): number {
   const rates: Record<string, number> = {
-    "gpt-image-1": 0.06,
-    "ideogram-v3": 0.08,
-    "recraftv4": 0.06,
-    "black-forest-labs/flux-schnell": 0.01,
-    "stability-ai/sdxl": 0.01,
+    [IDEOGRAM_MODEL]: 0.08,
+    [RECRAFT_MODEL]: 0.06,
+    [FLUX_SCHNELL_MODEL]: 0.01,
+    [SDXL_MODEL]: 0.01,
   };
   return rates[model] ?? 0.05;
 }
@@ -182,7 +223,7 @@ async function executeRoute(input: CallLlmInput, route: RouteDefinition): Promis
         model: route.model,
         system: input.system,
         maxTokens: input.maxTokens,
-        temperature: input.temperature,
+        effort: input.effort ?? route.effort,
         expectJson: input.expectJson,
       });
 
@@ -193,45 +234,6 @@ async function executeRoute(input: CallLlmInput, route: RouteDefinition): Promis
         promptTokens: response.promptTokens,
         completionTokens: response.completionTokens,
         costUsd: estimateTextCost(response.model, response.promptTokens, response.completionTokens),
-        latencyMs: Math.round(performance.now() - startedAt),
-      };
-    }
-    case "openai": {
-      const response = await generateOpenAIText(input.prompt, {
-        model: route.model,
-        system: input.system,
-        maxOutputTokens: input.maxTokens,
-        temperature: input.temperature,
-      });
-
-      return {
-        provider: route.provider,
-        model: response.model,
-        text: input.expectJson ? response.text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim() : response.text,
-        promptTokens: response.promptTokens,
-        completionTokens: response.completionTokens,
-        costUsd: estimateTextCost(response.model, response.promptTokens, response.completionTokens),
-        latencyMs: Math.round(performance.now() - startedAt),
-      };
-    }
-    case "openai_image": {
-      if (!input.destinationPath) {
-        throw new Error(`Task ${input.taskType} requires destinationPath for image output.`);
-      }
-
-      const response = await generateOpenAIImageToPath(input.prompt, {
-        model: route.model,
-        destinationPath: input.destinationPath,
-        size: input.size,
-      });
-
-      return {
-        provider: route.provider,
-        model: response.model,
-        destinationPaths: [response.destinationPath],
-        promptTokens: response.promptTokens,
-        completionTokens: response.completionTokens,
-        costUsd: estimateImageCost(response.model),
         latencyMs: Math.round(performance.now() - startedAt),
       };
     }
@@ -305,7 +307,22 @@ async function executeRoute(input: CallLlmInput, route: RouteDefinition): Promis
  * Routes a task across the ordered provider chain, recording each failed attempt until one succeeds.
  */
 export async function callLLM(input: CallLlmInput): Promise<CallLlmResult> {
-  const routes = getRouteDefinitions(input.taskType);
+  const allRoutes = getRouteDefinitions(input.taskType);
+  const routes = allRoutes.filter((route) => isProviderConfigured(route.provider));
+  const skipped = allRoutes.filter((route) => !isProviderConfigured(route.provider));
+
+  if (skipped.length > 0) {
+    logger.warn("Skipping LLM routes with no configured credential", {
+      taskType: input.taskType,
+      skipped: skipped.map((route) => `${route.provider}:${route.model}`),
+    });
+  }
+
+  if (routes.length === 0) {
+    const providers = [...new Set(allRoutes.map((route) => route.provider))].join(", ");
+    throw new Error(`No configured provider for ${input.taskType}. Add a credential for one of: ${providers}.`);
+  }
+
   logger.action("Routing LLM task", "start", {
     taskType: input.taskType,
     strategy: getRoutingStrategy(),

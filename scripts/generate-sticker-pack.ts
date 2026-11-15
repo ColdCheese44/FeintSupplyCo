@@ -257,7 +257,6 @@ async function generateStickerListingCopy(spec: StickerDesignSpec): Promise<Stic
     taskType: "listing_copywriting",
     prompt,
     maxTokens: 900,
-    temperature: 0.45,
     expectJson: true,
   });
 

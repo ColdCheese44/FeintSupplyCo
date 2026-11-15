@@ -26,12 +26,22 @@
 ## Etsy OAuth setup
 
 - In your Etsy app dashboard, register `http://localhost:3000/oauth/callback` as a redirect URI before running the OAuth helper.
-- Run `npm run etsy:oauth` to launch the browser-based PKCE flow and store `ETSY_ACCESS_TOKEN` plus `ETSY_REFRESH_TOKEN` back into `.env`.
+- Run `npm run etsy:oauth` to launch the browser-based PKCE flow in fullscreen Brave and store `ETSY_ACCESS_TOKEN` plus `ETSY_REFRESH_TOKEN` back into `.env`.
 - Run `python scripts/fetch_etsy_defaults.py` immediately after OAuth to populate:
   - `ETSY_SHOP_ID`
   - `ETSY_SHIPPING_PROFILE_ID`
   - `ETSY_DEFAULT_TAXONOMY_ID`
   - `ETSY_READINESS_STATE_ID`
+
+## Browser launch defaults
+
+Dashboard and OAuth launchers prefer Brave fullscreen. Override the executable or window mode when needed:
+
+```powershell
+$env:FEINT_BROWSER_MODE="fullscreen" # fullscreen, maximized, normal, or kiosk
+$env:FEINT_BROWSER_PATH="C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
+$env:FEINT_BROWSER="brave"
+```
 
 ## Printify and Pinterest prerequisites
 

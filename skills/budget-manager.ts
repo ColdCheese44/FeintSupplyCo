@@ -134,6 +134,8 @@ export function getBudgetSnapshot(): BudgetSnapshot {
   const llmTextSpent = Number((db.prepare(`
     SELECT COALESCE(SUM(cost_usd), 0) AS total
     FROM llm_calls
+    // 'openai' is retained in these provider filters only so historical llm_calls rows
+    // logged before the Claude-only migration still classify as text spend rather than image spend.
     WHERE provider IN ('claude', 'openai')
   `).get() as { total: number }).total ?? 0);
   const imageGenerationSpent = Number((db.prepare(`

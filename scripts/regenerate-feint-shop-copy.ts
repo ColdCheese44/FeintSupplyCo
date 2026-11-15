@@ -322,7 +322,6 @@ async function generateShopCopyWithRetry(): Promise<ShopCopyPayload> {
       const result = await runClaudeCompletion(prompt, {
         model: "claude-sonnet-4-6",
         maxTokens: 2600,
-        temperature: 0.55,
         expectJson: true,
       });
       const parsed = JSON.parse(stripCodeFences(result.text)) as ShopCopyPayload;

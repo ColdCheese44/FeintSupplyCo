@@ -251,7 +251,6 @@ Return ONLY valid JSON, no markdown backticks, no preamble.`;
     taskType: "listing_copywriting",
     prompt,
     maxTokens: 1800,
-    temperature: 0.5,
     expectJson: true,
   });
 
@@ -272,7 +271,6 @@ export async function refreshShopAnnouncement(): Promise<string> {
     taskType: "listing_copywriting",
     prompt,
     maxTokens: 120,
-    temperature: 0.6,
   });
   return normalizeAsciiText(response.text?.trim() ?? "");
 }

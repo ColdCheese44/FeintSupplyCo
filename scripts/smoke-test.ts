@@ -362,19 +362,6 @@ async function probeAnthropic(): Promise<{ auth: ProviderAuthStatus; functional:
 }
 
 /**
- * Checks OpenAI credentials against the read-only models endpoint.
- */
-async function probeOpenAI(): Promise<{ auth: ProviderAuthStatus; functional: FunctionalStatus; sample?: unknown; note?: string }> {
-  return probeJson("OpenAI", "https://api.openai.com/v1/models", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY ?? ""}`,
-      Accept: "application/json",
-    },
-  });
-}
-
-/**
  * Checks Replicate credentials against the public models list without triggering generation.
  */
 async function probeReplicate(): Promise<{ auth: ProviderAuthStatus; functional: FunctionalStatus; sample?: unknown; note?: string }> {
@@ -853,7 +840,6 @@ async function probeDiscord(): Promise<{ auth: ProviderAuthStatus; functional: F
 
 const providerDefinitions: ProviderDefinition[] = [
   { name: "Anthropic", authKeys: ["ANTHROPIC_API_KEY"], gateKeys: [], probe: probeAnthropic },
-  { name: "OpenAI", authKeys: ["OPENAI_API_KEY"], gateKeys: [], probe: probeOpenAI },
   { name: "Replicate", authKeys: ["REPLICATE_API_TOKEN"], gateKeys: [], probe: probeReplicate },
   {
     name: "Etsy",
@@ -1111,7 +1097,7 @@ async function main(): Promise<void> {
       },
       {
         name: "listing-gen",
-        dependenciesAny: ["Anthropic", "OpenAI"],
+        dependenciesAny: ["Anthropic"],
         run: () => generateListing({ nicheName: "Minimalist Wall Art", keyword: "retro arcade typography", productType: "poster" }),
       },
       {
@@ -1136,7 +1122,7 @@ async function main(): Promise<void> {
       },
       {
         name: "design-generator",
-        dependenciesAny: ["Ideogram", "OpenAI", "Recraft", "Replicate"],
+        dependenciesAny: ["Ideogram", "Recraft", "Replicate"],
         run: () => generateDesignBundle({ theme: "retro arcade typography", productType: "t-shirt" }),
       },
       {
@@ -1153,12 +1139,12 @@ async function main(): Promise<void> {
       {
         name: "trademark-hunter",
         dependenciesAll: ["USPTO"],
-        dependenciesAny: ["Anthropic", "OpenAI"],
+        dependenciesAny: ["Anthropic"],
         run: () => runTrademarkHunter(),
       },
       {
         name: "marketing-engine",
-        dependenciesAny: ["Anthropic", "OpenAI"],
+        dependenciesAny: ["Anthropic"],
         run: () => runMarketingEngine(),
       },
       {

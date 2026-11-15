@@ -169,9 +169,11 @@ async function evaluatePreRunGuardrails(): Promise<{
 }> {
   const balance = await runBalanceMonitor();
   let skipImageGeneration = false;
-  const hasOpenAiImageFallback = Boolean(process.env.OPENAI_API_KEY?.trim());
+  // Replicate is the image backbone now that OpenAI image generation is gone.
+  // Ideogram and Recraft are the only remaining fallbacks, and both are optional.
+  const hasImageFallback = Boolean(process.env.IDEOGRAM_API_KEY?.trim() || process.env.RECRAFT_API_KEY?.trim());
 
-  if (balance.replicate.status === "low" && !hasOpenAiImageFallback) {
+  if (balance.replicate.status === "low" && !hasImageFallback) {
     skipImageGeneration = true;
     if (getAutomationControl("replicate_low_credit_notice")?.value !== "sent") {
       await postDiscordMessage(
@@ -183,7 +185,7 @@ async function evaluatePreRunGuardrails(): Promise<{
     setAutomationControl(
       "replicate_low_credit_notice",
       "fallback",
-      "Replicate credit is low; OpenAI image generation remains available as the automatic fallback.",
+      "Replicate credit is low; Ideogram/Recraft remain available as the automatic image fallback.",
     );
   } else {
     setAutomationControl("replicate_low_credit_notice", "clear", "Replicate credit is healthy again.");

@@ -229,8 +229,7 @@ export async function runBalanceMonitor(): Promise<BalanceMonitorResult> {
 
   await checkReplicateBalance(result);
   await checkProviderHealth(result);
-  result.notes.push("Anthropic balance check unavailable");
-  result.notes.push("OpenAI balance check skipped - spend tracked locally");
+  result.notes.push("Anthropic balance check unavailable - spend tracked locally in llm_calls");
   result.notes.push("Printify balance check skipped - pay-per-order provider");
 
   logger.action("Balance monitor completed", "success", result);

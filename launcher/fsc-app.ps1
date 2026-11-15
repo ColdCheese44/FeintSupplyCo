@@ -111,7 +111,7 @@ function Invoke-Component([string]$key) {
   try {
     switch ($key) {
       "dashboard" {
-        # Opens the dashboard as a chromeless app window (FeintTrade-style terminal),
+        # Opens the dashboard as a fullscreen Brave app window (FeintTrade-style terminal),
         # starting the server first if needed.
         $terminal = Join-Path $PSScriptRoot "fsc-terminal.ps1"
         Start-Process -FilePath "powershell.exe" -ArgumentList @("-NoProfile", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden", "-File", $terminal) -WorkingDirectory $ProjectRoot | Out-Null
@@ -293,7 +293,7 @@ function Add-Section([string]$heading, [array]$buttons) {
 }
 
 Add-Section "Dashboard & Autonomy" @(
-  (New-ActionButton "Open Terminal"         "dashboard"        "green"  "Open the dashboard as a chromeless app window (starts the server if needed)"),
+  (New-ActionButton "Open Terminal"         "dashboard"        "green"  "Open the dashboard as a fullscreen Brave app window (starts the server if needed)"),
   (New-ActionButton "Start Daemon"          "start-daemon"     "green"  "Start the autonomous daemon now (hidden)"),
   (New-ActionButton "Stop Daemon"           "stop-daemon"      "danger" "Stop the running autonomous daemon"),
   (New-ActionButton "Install Autostart"     "install-daemon"   "cyan"   "Register autostart (scheduled task or logon launcher) and start now"),
