@@ -301,8 +301,8 @@ function loadCosts(): Record<string, unknown> {
     const actualSpend = db.prepare(`
       SELECT
         (SELECT COALESCE(SUM(amount_usd), 0) FROM budget_ledger WHERE category = 'listing_fee') AS listing_fee,
-        // 'openai' is retained in these provider filters only so historical llm_calls rows
-        // logged before the Claude-only migration still classify as text spend rather than image spend.
+        -- 'openai' is retained here only so historical llm_calls rows logged before the
+        -- Claude-only migration still classify as text spend rather than image spend.
         (SELECT COALESCE(SUM(cost_usd), 0) FROM llm_calls WHERE provider NOT IN ('claude', 'openai')) AS image_gen,
         (SELECT COALESCE(SUM(cost_usd), 0) FROM llm_calls WHERE provider IN ('claude', 'openai')) AS llm_copy,
         (SELECT COALESCE(SUM(cost_usd), 0) FROM marketing_events) AS marketing,
