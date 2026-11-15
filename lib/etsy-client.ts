@@ -36,6 +36,16 @@ export interface EtsyDraftListingPayload {
   tags: string[];
 }
 
+export interface EtsyActiveListing {
+  listing_id: number;
+  title: string;
+  description?: string;
+  taxonomy_id?: number;
+  tags?: string[];
+  state?: string;
+  url?: string;
+}
+
 export interface EtsyDraftListingResponse {
   listing_id: number | string;
   url?: string;
@@ -803,8 +813,9 @@ export async function updateListingSection(listingId: string | number, sectionId
  */
 export async function updateListingTags(listingId: string | number, tags: string[]): Promise<void> {
   const shopId = getShopId();
+  // Etsy v3 only accepts PATCH on the listing resource. PUT returns 404 Resource not found.
   const response = await fetchEtsy(`/application/shops/${shopId}/listings/${listingId}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
@@ -815,6 +826,43 @@ export async function updateListingTags(listingId: string | number, tags: string
 
   if (!response.ok) {
     throw new Error(`Etsy listing tag update failed: ${response.status} ${response.statusText} - ${await readErrorBody(response)}`);
+  }
+}
+
+/**
+ * Lists the shop's currently active listings so maintenance jobs can audit and repair live inventory.
+ */
+export async function listActiveShopListings(limit = 100): Promise<EtsyActiveListing[]> {
+  const shopId = getShopId();
+  const response = await fetchEtsy(`/application/shops/${shopId}/listings/active?limit=${limit}`, { method: "GET" });
+
+  if (!response.ok) {
+    throw new Error(`Etsy active listing lookup failed: ${response.status} ${response.statusText} - ${await readErrorBody(response)}`);
+  }
+
+  const payload = (await response.json()) as EtsyListResponse<EtsyActiveListing>;
+  logger.action("Fetched active Etsy listings", "success", { count: payload.results.length });
+  return payload.results;
+}
+
+/**
+ * Moves a live listing onto a more specific taxonomy node. Etsy ranks listings sitting on the
+ * root node (taxonomy_id 1) poorly because they match no specific category search.
+ */
+export async function updateListingTaxonomy(listingId: string | number, taxonomyId: number): Promise<void> {
+  const shopId = getShopId();
+  const response = await fetchEtsy(`/application/shops/${shopId}/listings/${listingId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      taxonomy_id: String(taxonomyId),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Etsy listing taxonomy update failed: ${response.status} ${response.statusText} - ${await readErrorBody(response)}`);
   }
 }
 

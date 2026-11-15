@@ -1,0 +1,240 @@
+{
+  "capturedAt": "2026-11-15T02:59:22Z",
+  "capturedBy": "claude-in-chrome: read-only recon, then listing renewal",
+  "rangeDays": 30,
+  "shop": {
+    "name": "FeintSupplyCo",
+    "url": "https://feintsupplyco.etsy.com",
+    "followers": 1
+  },
+  "listings": {
+    "active": 7,
+    "draft": 2,
+    "expired": 0,
+    "soldOut": 0,
+    "inactive": 0,
+    "draftItems": [
+      {
+        "title": "Embroidered Beanie"
+      },
+      {
+        "title": "Embroidered Beanie"
+      }
+    ],
+    "listingsWithVideo": 0,
+    "tagSlotsUsed": 13,
+    "tagSlotsAvailable": 13,
+    "shippingProfileInUse": "Home (7 listings)",
+    "printfulProfileInUse": "0 listings",
+    "listingsWithReturnPolicyAttached": 7,
+    "renewedAt": "2026-11-15",
+    "renewalCostUsd": 1.4,
+    "newExpiry": "2027-03-14",
+    "autoRenewEnabled": false,
+    "activeItems": [
+      {
+        "title": "Feint Supply Co. - Redacted Sticker",
+        "price": 4.99,
+        "stock": 998
+      },
+      {
+        "title": "Feint Supply Co. - Grid Mark Sticker",
+        "price": 4.99,
+        "stock": 999
+      },
+      {
+        "title": "Feint Supply Co. - Wordmark Sticker",
+        "price": 4.99,
+        "stock": 999
+      },
+      {
+        "title": "Feint Supply Co. - Signal Phrase Sticker",
+        "price": 4.99,
+        "stock": 999
+      },
+      {
+        "title": "Feint Supply Co. - FSC Badge Sticker",
+        "price": 4.99,
+        "stock": 999
+      },
+      {
+        "title": "Feint Supply Co. - Chevron Mark Sticker",
+        "price": 4.99,
+        "stock": 999
+      },
+      {
+        "title": "Feint Supply Co. - Alert Status Sticker",
+        "price": 4.99,
+        "stock": 999
+      }
+    ],
+    "taxonomyId": 1326,
+    "taxonomyName": "Craft Supplies & Tools > Scrapbooking > Stickers, Labels & Tags > Stickers",
+    "previousTaxonomyId": 1,
+    "uniqueTagsAcrossShop": 73,
+    "tagsSharedByAllSeven": [
+      "vinyl sticker",
+      "laptop sticker",
+      "die cut sticker"
+    ],
+    "photosPerListing": "1 design + 2 generated mockups"
+  },
+  "stats": {
+    "visits": 0,
+    "orders": 0,
+    "revenueUsd": 0,
+    "conversionRatePct": 0,
+    "averageOrderValueUsd": 0,
+    "totalFavorites": 0,
+    "abandonedCarts": 0,
+    "trafficSources": [
+      {
+        "source": "Etsy app and pages",
+        "visits": 0
+      },
+      {
+        "source": "Etsy Search",
+        "visits": 0
+      },
+      {
+        "source": "Etsy marketing and SEO",
+        "visits": 0
+      },
+      {
+        "source": "Direct and referral",
+        "visits": 0
+      },
+      {
+        "source": "Social media",
+        "visits": 0
+      },
+      {
+        "source": "Etsy Ads",
+        "visits": 0
+      },
+      {
+        "source": "Other",
+        "visits": 0
+      }
+    ],
+    "searchTerms": [],
+    "note": "Etsy reports 'Not enough data' on every panel. Zero traffic is a consequence of zero active listings, not of poor ranking."
+  },
+  "ads": {
+    "enabled": false,
+    "everEnabled": false,
+    "dailyBudgetUsd": null,
+    "spendUsd": 0,
+    "note": "Advertising page still shows the onboarding offer, so no campaign has ever run and no spend is leaking."
+  },
+  "messages": {
+    "unreadCount": 0,
+    "items": [],
+    "note": "Inbox empty - 'No conversations to see here!'"
+  },
+  "orders": {
+    "lifetimeSales": 1,
+    "actionNeeded": 1,
+    "overdue": 1,
+    "items": [
+      {
+        "orderId": "4068394201",
+        "orderedAt": "2026-05-20",
+        "amountUsd": 11.27,
+        "status": "Fully refunded",
+        "fulfillment": "Overdue - ship by date passed 175 days ago",
+        "item": "Feint Supply Co. - Redacted Sticker",
+        "quantity": 1,
+        "shipTo": "Colorado Springs, CO",
+        "note": "Appears to be the owner's own test purchase. Refunded but never marked shipped or completed, so it still sits in Action Needed. Attempted to mark complete via bulk action on 2026-11-15; Etsy did not apply the transition, likely because the order is fully refunded. Still showing as Overdue."
+      }
+    ]
+  },
+  "shopHealth": {
+    "policyViolations": 0,
+    "policyViolationStatus": "All clear",
+    "searchVisibilityShopInfo": "pass",
+    "searchVisibilityServiceStandards": "insufficient data - needs 5+ orders",
+    "searchVisibilityListings": "RESOLVED - 'You have high-quality listings and clear info. Bravo!'",
+    "shopName": "added",
+    "logo": "added",
+    "banner": "added",
+    "aboutStory": "not added",
+    "etsyNamedSearchFactors": [],
+    "perListingImprovements": "3 ways to improve on each of the 7 listings",
+    "oauthReauthorized": "2026-11-15 - prior refresh_token had expired, breaking all API automation"
+  },
+  "starSeller": null,
+  "reviews": {
+    "recent": [],
+    "count": 0,
+    "awaitingResponseCount": 0
+  },
+  "sales": {
+    "activeSales": null,
+    "coupons": null,
+    "abandonedCartOfferEnabled": false,
+    "note": "Sales and Discounts page not opened this pass; moot while no listing is active."
+  },
+  "policies": {
+    "returnPolicyExists": "Returns & exchanges accepted | 30 days",
+    "listingsUsingIt": 0,
+    "processingTime": null,
+    "note": "A return policy exists but is attached to zero listings. Policy settings page was not reachable at the URL tried; not yet verified in full."
+  },
+  "uiOnlyOpportunities": [
+    {
+      "area": "Listings",
+      "finding": "All 7 sticker listings expired on 2026-09-20 and nothing replaced them. The shop has had zero sellable inventory for roughly 8 weeks.",
+      "suggestedAction": "Renew the 7 expired listings (about $0.20 each, roughly $1.40 total) to restore the storefront immediately.",
+      "estimatedImpact": "Unblocks everything. No other lever can work while the shop is empty.",
+      "status": "DONE 2026-11-15 - renewed 7 listings for $1.40"
+    },
+    {
+      "area": "Search visibility",
+      "finding": "With listings live, Etsy now names 3 concrete factors hurting search visibility: Category, Not enough photos, and Return policy. These were invisible while the shop was empty.",
+      "suggestedAction": "Work Etsy's own list: attach the existing 30-day return policy, add photos, and fix category assignment.",
+      "estimatedImpact": "These are Etsy's stated ranking inputs, not inference - the highest-confidence SEO work available.",
+      "status": "DONE 2026-11-15 - all 3 factors cleared"
+    },
+    {
+      "area": "SEO",
+      "finding": "All 7 listings carry an identical 10-tag set, so they compete with each other for the same queries instead of covering distinct ones, and 3 of the 13 tag slots go unused.",
+      "suggestedAction": "Differentiate tags per listing and fill all 13 slots.",
+      "estimatedImpact": "Widens the number of distinct searches the shop can appear in once listings are live.",
+      "status": "DONE 2026-11-15 - 73 unique tags, 13 per listing, only 3 shared"
+    },
+    {
+      "area": "Orders",
+      "finding": "A refunded test order from 2026-05-20 has sat overdue for 175 days and still counts as Action Needed.",
+      "suggestedAction": "Mark the order complete to clear the flag before real orders arrive.",
+      "estimatedImpact": "Removes a standing fulfillment blemish ahead of Star Seller tracking starting at 5 orders.",
+      "status": "BLOCKED - Etsy will not complete a fully refunded order via bulk action"
+    },
+    {
+      "area": "Listings",
+      "finding": "Zero listings have a return policy attached, and zero have video.",
+      "suggestedAction": "Attach the existing 30-day return policy during renewal, and add video where practical.",
+      "estimatedImpact": "Both are ranking and conversion inputs Etsy weighs directly.",
+      "status": "PARTIAL 2026-11-15 - return policy on all 7; video still absent"
+    },
+    {
+      "area": "Fulfillment",
+      "finding": "All 7 listings sit on the 'Home' shipping profile; the Printful profile is attached to none, despite POD being the fulfillment model.",
+      "suggestedAction": "Confirm which profile should apply before relisting.",
+      "estimatedImpact": "A mismatch here means shipping cost and timing quoted to buyers will not match how the item is actually fulfilled."
+    },
+    {
+      "area": "Shop",
+      "finding": "The About story is still unwritten; Etsy's own dashboard flags it.",
+      "suggestedAction": "Publish it via the existing updateShopAboutStory API path.",
+      "estimatedImpact": "Flagged by Etsy as a trust and search-visibility input."
+    },
+    {
+      "area": "Reliability",
+      "finding": "Etsy refresh tokens expire after 90 days. The expiry silently disabled every API path - publishing, renewal, analytics, order watch - with no alarm. Re-authorized 2026-11-15.",
+      "suggestedAction": "Have the daemon check token age each run and warn on Discord before expiry.",
+      "estimatedImpact": "Prevents a repeat of the 8-week outage that let every listing expire unnoticed."
+    }
+  ]
+}
