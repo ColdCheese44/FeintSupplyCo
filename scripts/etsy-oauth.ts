@@ -7,6 +7,8 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { parse as parseDotenv } from "dotenv";
+
+import { stampRefreshTokenIssued } from "../lib/etsy-token-health.js";
 import { openInFeintBrowser } from "../lib/browser-launcher.js";
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -309,6 +311,7 @@ async function main(): Promise<void> {
 
   writeEnvValue("ETSY_ACCESS_TOKEN", tokenPayload.access_token);
   writeEnvValue("ETSY_REFRESH_TOKEN", tokenPayload.refresh_token);
+  stampRefreshTokenIssued();
   console.log(`Stored ETSY_ACCESS_TOKEN (${redactTokenPreview(tokenPayload.access_token)}) in .env.`);
   console.log(`Stored ETSY_REFRESH_TOKEN (${redactTokenPreview(tokenPayload.refresh_token)}) in .env.`);
 

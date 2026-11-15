@@ -2,8 +2,9 @@ import "dotenv/config";
 
 import { pathToFileURL } from "node:url";
 
-import { initializeDatabase, setAutomationControl } from "../lib/db.js";
+import { getAutomationControl, initializeDatabase, setAutomationControl } from "../lib/db.js";
 import { postDiscord } from "../lib/discord.js";
+import { getEtsyTokenHealth, type EtsyTokenStatus } from "../lib/etsy-token-health.js";
 import { readHeartbeatTimestamp } from "../lib/heartbeat-state.js";
 import { createLogger } from "../lib/logger.js";
 
@@ -12,6 +13,8 @@ export interface WatchdogSummary {
   ageHours: number | null;
   status: "healthy" | "warning" | "critical" | "unknown";
   alertsSent: number;
+  etsyTokenStatus: EtsyTokenStatus;
+  etsyTokenDaysRemaining: number | null;
 }
 
 const logger = createLogger("watchdog");
@@ -40,6 +43,40 @@ function getAgeHours(timestamp: string): number {
 }
 
 /**
+ * Warns on Discord while an expiring Etsy refresh token can still be renewed without an outage.
+ * Alerts are deduplicated through automation control state so a daily watchdog does not spam.
+ */
+async function checkEtsyTokenExpiry(): Promise<{ status: EtsyTokenStatus; daysRemaining: number | null; alertsSent: number }> {
+  const health = getEtsyTokenHealth();
+  const controlKey = "etsy_token_expiry_notice";
+  let alertsSent = 0;
+
+  if (health.status === "healthy") {
+    setAutomationControl(controlKey, "clear", health.message);
+    return { status: health.status, daysRemaining: health.daysRemaining, alertsSent };
+  }
+
+  // Only alert when the severity changes, so repeated runs stay quiet.
+  const alreadyNotified = getAutomationControl(controlKey)?.value === health.status;
+  if (!alreadyNotified) {
+    const color = health.status === "expired" || health.status === "critical" ? 0xff0000 : 0xffb000;
+    const title = health.status === "expired"
+      ? "Etsy authorization EXPIRED - automation is down"
+      : "Etsy authorization expiring";
+    if (await postWatchdogAlert(title, health.message, color)) {
+      alertsSent += 1;
+    }
+    setAutomationControl(controlKey, health.status, health.message);
+  }
+
+  logger.warn("Etsy refresh token needs attention", {
+    status: health.status,
+    daysRemaining: health.daysRemaining,
+  });
+  return { status: health.status, daysRemaining: health.daysRemaining, alertsSent };
+}
+
+/**
  * Runs the heartbeat freshness check and escalates to Discord plus DB state when the system appears stale.
  */
 export async function runWatchdog(): Promise<WatchdogSummary> {
@@ -54,11 +91,14 @@ export async function runWatchdog(): Promise<WatchdogSummary> {
       "No successful FeintSupplyCo heartbeat timestamp has been recorded yet.",
       0xff0000,
     ) ? 1 : 0;
+    const token = await checkEtsyTokenExpiry();
     const summary: WatchdogSummary = {
       lastHeartbeatAt: null,
       ageHours: null,
       status: "unknown",
-      alertsSent,
+      alertsSent: alertsSent + token.alertsSent,
+      etsyTokenStatus: token.status,
+      etsyTokenDaysRemaining: token.daysRemaining,
     };
     logger.action("Watchdog completed", "success", summary);
     return summary;
@@ -92,11 +132,14 @@ export async function runWatchdog(): Promise<WatchdogSummary> {
     setAutomationControl("system_stale", "false", "Heartbeat is fresh.");
   }
 
+  const token = await checkEtsyTokenExpiry();
   const summary: WatchdogSummary = {
     lastHeartbeatAt,
     ageHours: Number(ageHours.toFixed(2)),
     status,
-    alertsSent,
+    alertsSent: alertsSent + token.alertsSent,
+    etsyTokenStatus: token.status,
+    etsyTokenDaysRemaining: token.daysRemaining,
   };
   logger.action("Watchdog completed", "success", summary);
   return summary;

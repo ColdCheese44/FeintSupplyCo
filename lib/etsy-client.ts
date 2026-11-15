@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { readFileSync, writeFileSync } from "node:fs";
 import { basename, extname, resolve } from "node:path";
 
+import { stampRefreshTokenIssued } from "./etsy-token-health.js";
 import { createLogger } from "./logger.js";
 
 export interface EtsySearchListing {
@@ -168,6 +169,11 @@ function writeTokenToEnv(key: "ETSY_ACCESS_TOKEN" | "ETSY_REFRESH_TOKEN", value:
 
   writeFileSync(envPath, content, "utf-8");
   process.env[key] = value;
+
+  // Track when a refresh token was issued so the watchdog can warn before its 90-day expiry.
+  if (key === "ETSY_REFRESH_TOKEN") {
+    stampRefreshTokenIssued();
+  }
 }
 
 /**
